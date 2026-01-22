@@ -1,0 +1,57 @@
+{% load text_filters %}
+{% load events %}
+
+{% for chk in checklist %}
+<form action="{% url "update_ticket_checklist_answer" ticket.id %}" method="post">
+    <input type="hidden" name="checklist_id" value="{{ chk.option.id }}">
+    {% csrf_token %}
+
+    <div class="block ticket-checklist-item {% if chk.option.is_required %}{% if chk.answer %}ticket-checklist-green{% else %}ticket-checklist-red{% endif %}{% endif %}">
+        {% if chk.option.type == "select" %}
+            <div class="ticket-checklist-name">{{ chk.option.name }}</div>
+            <div class="ticket-checklist-value ticket-checklist-value-select">
+                <select name="answer_value" onchange="this.form.submit()">
+                    <option value="">Не выбрано</option>
+                    {% for select_option in chk.option.value %}
+                        <option value="{{ select_option.item }}" {% if chk.answer == select_option.item %}selected{% endif %}>
+                            {{ select_option.item }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% elif chk.option.type == "limited_select" %}
+            <div class="ticket-checklist-name">{{ chk.option.name }}</div>
+            <div class="ticket-checklist-value ticket-checklist-value-select">
+                <select name="answer_value" onchange="this.form.submit()">
+                    <option value="">Не выбрано</option>
+                    {% for select_option in chk.option.value %}
+                        <option value="{{ select_option.item }}" {% if chk.answer == select_option.item %}selected{% endif %} {% if chk.stats|dict_get:select_option.item >= select_option.limit %}disabled{% endif %}>
+                            {{ select_option.item }} {% if select_option.limit %}({{ chk.stats|dict_get:select_option.item|default:0 }} из {{ select_option.limit }}){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% elif chk.option.type == "text" %}
+            <div class="ticket-checklist-check">☑️</div>
+            <div class="ticket-checklist-name">{{ chk.option.name }}</div>
+            <div class="ticket-checklist-value ticket-checklist-value-text">
+                <input type="text" name="answer_value" value="{{ chk.answer }}">
+                <button type="submit">Сохранить</button>
+            </div>
+        {% elif chk.option.type == "link" %}
+                <div class="ticket-checklist-check">☑️</div>
+                <div class="ticket-checklist-name">
+                    <a href="{{ chk.option.value }}" target="_blank">{{ chk.option.name }}</a>
+                </div>
+                <div class="ticket-checklist-value ticket-checklist-value-link">
+                    <a href="{{ chk.option.value }}" target="_blank">🔗 {{ chk.option.value|truncatechars:32 }}</a>
+                </div>
+
+        {% else %}
+            <div class="ticket-checklist-check">☑️</div>
+            <div class="ticket-checklist-name">{{ chk.option.name }}</div>
+            <div class="ticket-checklist-value">Тип {{ chk.option.type }} не поддерживается</div>
+        {% endif %}
+    </div>
+</form>
+{% endfor %}

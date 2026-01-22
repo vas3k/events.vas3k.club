@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+{% load text_filters %}
+{% load events %}
+
+{% block title %}
+    Билет на {{ ticket.event.title }}: #{{ ticket.code }} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="content ticket">
+        <div class="event-sidebar ticket-sidebar">
+            <a href="{% url "show_event" ticket.event.id %}">
+                <span class="event-image" style="background-image: url('{{ ticket.event.image }}');"></span>
+            </a>
+
+            <div class="event-description">{{ ticket.event.description | markdown }}</div>
+
+            {% if ticket.event.location %}
+                <div class="event-location">
+                    📍 {% if ticket.event.location_url %}
+                        <a href="{{ ticket.event.location_url }}">{{ ticket.event.location }}</a>
+                    {% else %}
+                        {{ ticket.event.location }}
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if ticket.event.event_starts_at %}
+                <div class="event-date">📅 {% pretty_date_range ticket.event.event_starts_at ticket.event.event_ends_at %}</div>
+            {% endif %}
+
+            <div class="event-managers">
+                {% for manager in ticket.event.manager_users %}
+                    <div class="event-manager">
+                        <span class="avatar" style="background-image: url('{{ manager.avatar }}');"></span>
+                        <span>{{ manager.full_name }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if ticket.event.contact_url %}
+                <div class="event-contact">
+                    💬 <a href="{{ ticket.event.contact_url }}">Связаться с оргами</a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="ticket-main animate-on-load">
+            <div class="ticket-title">
+                Билет на {{ ticket.event.title }}
+            </div>
+
+            <div class="ticket-description">
+                {% include "tickets/ticket-item.html" with ticket=ticket %}
+            </div>
+
+            {% if checklist %}
+                <div class="block">
+                    <div class="block-header">☑️ Чеклист участника</div>
+                    <div class="ticket-checklist">
+                        {% include "tickets/checklist.html" %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if ticket.ticket_type.welcome_message_text %}
+                <div class="ticket-welcome-message markdown-text">
+                    <div class="ticket-welcome-message-title">{{ ticket.ticket_type.welcome_message_title | markdown | safe }}</div>
+                    <div class="ticket-welcome-message-text">{{ ticket.ticket_type.welcome_message_text | markdown | safe }}</div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

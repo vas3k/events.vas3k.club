@@ -1,0 +1,9 @@
+# /etc/crontab: system-wide crontab
+# Example cron jobs for events.vas3k.club
+# Format: minute hour day month weekday command
+
+# Run Django management commands here
+# Example: Clean up old sessions daily at 2 AM
+# 0 2 * * * cd /app && python manage.py clearsessions
+
+# Add your cron jobs below this line

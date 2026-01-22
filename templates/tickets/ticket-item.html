@@ -1,0 +1,10 @@
+<a href="{% url "show_ticket" ticket.id %}" class="block block-clickable ticket-item">
+    <span class="ticket-item-icon">
+        <img src="{{ ticket.event.icon }}" alt="{{ ticket.event.title }}">
+    </span>
+    <span class="ticket-item-info">
+        <span class="ticket-item-title">{{ ticket.event.title }}: Билет №{{ ticket.code }}</span>
+        <span class="ticket-item-subtitle">{{ ticket.ticket_type.name }}</span>
+        <span class="ticket-item-subtitle">{{ ticket.ticket_type.description }}</span>
+    </span>
+</a>

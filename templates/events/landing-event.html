@@ -1,0 +1,56 @@
+{% load events %}
+{% load text_filters %}
+
+<div class="block block-clickable landing-event-block {% if its_past_event %}landing-event-block-past{% endif %}">
+    <div class="landing-event-block-image" style="background-image: url('{{ event.image }}');"></div>
+    <div class="landing-event-block-gradient"></div>
+
+    <div class="block landing-event-block-info">
+        <div class="landing-event-title">
+            {% if event.icon %}
+                <img src="{{ event.icon }}" class="landing-event-icon" alt="">
+            {% endif %}
+            <span>{{ event.title }}</span>
+        </div>
+        <div class="landing-event-dates">📅 {% pretty_date_range event.event_starts_at event.event_ends_at %}</div>
+        <div class="landing-event-location">📍{{ event.location }}</div>
+        {% if event.description %}
+            <div class="landing-event-description">{{ event.description }}</div>
+        {% endif %}
+
+        {% if event.is_sold_out %}
+            <div class="landing-event-sold-out">SOLD OUT 😱</div>
+        {% else %}
+            {% if event.is_sale_starts_soon %}
+                <div class="landing-event-sale-dates">🎟️ Продажа билетов с {{ event.sale_starts_at | date:"j E Y" }}</div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if event.is_sale_starts_soon %}
+        <div class="landing-event-countdown">
+            <div class="countdown-timer" data-seconds="{{ event.seconds_until_sale_starts }}">
+                <div class="countdown-item">
+                    <span class="countdown-label">Начало продажи билетов через</span>
+                </div>
+
+                <div class="countdown-item">
+                    <span class="countdown-value" data-unit="days">0</span>
+                    <span class="countdown-label">дней</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" data-unit="hours">00</span>
+                    <span class="countdown-label">часов</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" data-unit="minutes">00</span>
+                    <span class="countdown-label">минут</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-value" data-unit="seconds">00</span>
+                    <span class="countdown-label">секунд</span>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

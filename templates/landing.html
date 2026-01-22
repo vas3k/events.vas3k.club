@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <div class="content landing animate-on-load">
+        {% for event in upcoming_events %}
+            <a href="{% url "show_event" event.id %}">
+                {% include "events/landing-event.html" %}
+            </a>
+        {% endfor %}
+
+        {% if past_events %}
+            <div class="landing-header-past-events">Прошедшие ивенты 👇</div>
+
+            {% for event in past_events %}
+                <a href="{% url "show_event" event.id %}">
+                    {% include "events/landing-event.html" with its_past_event=1 %}
+                </a>
+            {% endfor %}
+        {% endif %}
+    </div>
+{% endblock %}

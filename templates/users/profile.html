@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+    Мои ивенты — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="block profile">
+        <div class="block-header profile-header">Я — {{ request.user.full_name }}</div>
+
+        <div class="block-description block-description-center">
+            Проверьте, что информация в вашем профиле актуальна — она будет напечатана на вашем бейджике
+        </div>
+
+        {% include "users/card.html" with user=request.user %}
+
+        <div class="block-description profile-buttons">
+            <a href="https://vas3k.club/user/me/edit/profile/" class="button">Редактировать в Клубе</a>
+            <a href="{% url "login_club" %}" class="button">Синхронизировать данные</a>
+        </div>
+
+        <div class="animate-on-load">
+            <div class="block-header profile-header">Мои билетики</div>
+
+            {% for ticket in tickets %}
+                {% include "tickets/ticket-item.html" with ticket=ticket %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="profile-footer">
+        <a href="{% url "logout" %}" class="button button-red">Выйти</a>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,182 @@
+import logging
+
+import stripe
+from authlib.oauth1.rfc5849.errors import MethodNotAllowedError
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, render, redirect
+from django.template import loader
+
+from common.markdown.markdown import markdown_tg
+from notifications.email.sender import send_transactional_email
+from notifications.telegram.sender import send_telegram_message, Chat
+from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers
+from tickets.models import Ticket, TicketChecklistAnswers
+
+from tickets.helpers import parse_stripe_webhook_event
+from users.models import User
+from vas3k_events.exceptions import BadRequest
+
+log = logging.getLogger()
+
+
+def stripe_webhook(request):
+    try:
+        event = parse_stripe_webhook_event(
+            request=request,
+            webhook_secret=settings.STRIPE_WEBHOOK_SECRET,
+            api_key=settings.STRIPE_API_KEY
+        )
+    except BadRequest as ex:
+        return HttpResponse(ex.message, status=ex.code)
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        session_id = session["id"]
+        customer_email = session["customer_details"]["email"].lower()
+        user = User.objects.filter(email=customer_email).first()
+        ticket_types_processed = set()
+
+        try:
+            session_with_items = stripe.checkout.Session.retrieve(
+                session_id,
+                expand=["line_items", "line_items.data.price.product"],
+                api_key=settings.STRIPE_API_KEY
+            )
+
+            # Process each item in the purchase
+            if session_with_items.line_items:
+                for item in session_with_items.line_items.data:
+                    stripe_product_id = item.price.product.id
+
+                    # Find the corresponding ticket
+                    try:
+                        ticket_type = TicketType.objects.get(stripe_product_id=stripe_product_id)
+                    except TicketType.DoesNotExist:
+                        log.exception(f"Ticket type for product_id {stripe_product_id} not found")
+                        raise BadRequest(f"Ticket type for product_id {stripe_product_id} not found")
+
+                    # Issue a ticket (one for each quantity)
+                    for _ in range(item.quantity):
+                        Ticket.objects.create(
+                            user=user,
+                            code=Ticket.objects.filter(event=ticket_type.event).count() + 1,
+                            customer_email=customer_email,
+                            stripe_payment_id=session.get("payment_intent"),
+                            event=ticket_type.event,
+                            ticket_type=ticket_type,
+                            metadata={
+                                "price_paid": item.price.unit_amount / 100,  # Convert from cents
+                                "currency": item.price.currency,
+                                "purchased_at": session["created"],
+                            },
+                            session=session,
+                        )
+
+                    ticket_types_processed.add(ticket_type)
+
+                    # Check if number of sales is exceeded
+                    ticket_sales_count = Ticket.objects.filter(ticket_type=ticket_type).count()
+                    TicketType.objects.filter(stripe_product_id=stripe_product_id).update(
+                        tickets_sold=ticket_sales_count
+                    )
+                    if ticket_type.limit_quantity >= 0 and ticket_type.stripe_payment_link_id:
+                        if ticket_sales_count >= ticket_type.limit_quantity:
+                            deactivate_payment_link(ticket_type.stripe_payment_link_id)
+
+            # Send confirmation emails (unique by ticket code)
+            for ticket_type in ticket_types_processed:
+                confirmation_template = loader.get_template("emails/custom_markdown.html")
+                send_transactional_email(
+                    recipient=customer_email,
+                    subject=ticket_type.welcome_message_title,
+                    html=confirmation_template.render({
+                        "user": user,
+                        "title": ticket_type.welcome_message_title,
+                        "body": ticket_type.welcome_message_text,
+                    })
+                )
+
+                if user and user.telegram_id:
+                    send_telegram_message(
+                        chat=Chat(id=user.telegram_id),
+                        text=f"<b>{ticket_type.welcome_message_title}</b>\n\n"
+                             f"{markdown_tg(ticket_type.welcome_message_text)}",
+                    )
+
+            return HttpResponse("[ok]", status=200)
+
+        except stripe.error.StripeError as e:
+            log.error(f"Stripe API error: {str(e)}")
+            return HttpResponse(f"Stripe API error: {str(e)}", status=500)
+
+    return HttpResponse("[unknown event]", status=400)
+
+
+def deactivate_payment_link(payment_link_id):
+    try:
+        stripe.PaymentLink.modify(
+            payment_link_id,
+            active=False,
+            api_key=settings.STRIPE_API_KEY
+        )
+        log.info(f"Payment link {payment_link_id} has been deactivated due to sales limit")
+        return True
+    except stripe.error.StripeError as e:
+        log.error(f"Failed to deactivate payment link {payment_link_id}: {str(e)}")
+        return False
+
+
+@login_required
+def show_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if ticket.user != request.user:
+        raise PermissionDenied()
+
+    checklist = []
+    if ticket.ticket_type.checklists:
+        ticket_checklists = TicketTypeChecklist.objects.filter(id__in=ticket.ticket_type.checklists)
+        my_answers = {
+            t.checklist.id: t for t in TicketChecklistAnswers.objects.filter(ticket=ticket).select_related("checklist")
+        }
+        answer_stats = TicketChecklistAnswers.event_answer_stats(ticket.event)
+
+        for ticket_checklist in ticket_checklists:
+            checklist.append(TicketChecklistWithAnswers(
+                option=ticket_checklist,
+                answer=my_answers[ticket_checklist.id].answer \
+                    if my_answers.get(ticket_checklist.id) else None,
+                stats=answer_stats.get(ticket_checklist.id) or {},
+            ))
+
+    return render(request, "tickets/show-ticket.html", {
+        "ticket": ticket,
+        "checklist": checklist,
+    })
+
+
+@login_required
+def update_ticket_checklist_answer(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if ticket.user != request.user:
+        raise PermissionDenied()
+
+    if request.method != "POST":
+        raise MethodNotAllowedError()
+
+    TicketChecklistAnswers.objects.update_or_create(
+        ticket=ticket,
+        user=request.user,
+        checklist_id=request.POST["checklist_id"],
+        defaults=dict(
+            answer=request.POST["answer_value"],
+        )
+    )
+
+    # TODO: check limits if answer is limited
+
+    return redirect("show_ticket", ticket_id=ticket.id)

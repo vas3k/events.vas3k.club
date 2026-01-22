@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load text_filters %}
+{% load events %}
+
+{% block title %}
+    Редактировать {{ event.title }} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="content event">
+        {{ form }}
+    </div>
+{% endblock %}

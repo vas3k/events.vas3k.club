@@ -1,0 +1,60 @@
+@media (max-width: 700px) {
+    .header {
+        justify-content: center;
+        gap: 20px;
+        padding-top: 20px;
+    }
+
+        .header-logo {
+            font-size: 30px;
+        }
+
+    .event, .ticket {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .event-sidebar, .ticket-sidebar {
+        order: 2;
+    }
+
+    .event-main, .ticket-main {
+        order: 1;
+    }
+
+    .profile-card {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+        .profile-card > * {
+            grid-column: 1;
+        }
+
+    .ticket-item {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .ticket-checklist-item {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .landing-event-block {
+        min-height: 500px;
+        padding: 5px;
+    }
+
+        .landing-event-block-info {
+            font-size: 100%;
+            width: auto;
+            margin: 10px;
+            padding: 20px;
+        }
+
+        .landing-event-countdown {
+            font-size: 100%;
+        }
+}

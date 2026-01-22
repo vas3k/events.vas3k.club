@@ -1,0 +1,54 @@
+services:
+  events_app: &app
+    image: ghcr.io/vas3k/events.vas3k.club:${GITHUB_SHA:-latest}
+    command: make docker-run-production
+    container_name: events_app
+    networks:
+      - events_network
+    environment:
+      - MODE=production
+      - PYTHONUNBUFFERED=1
+      - DEBUG=false
+      - POSTGRES_DB=${POSTGRES_DB:-vas3k_events}
+      - POSTGRES_USER=${POSTGRES_USER:-vas3k}
+      - POSTGRES_HOST=host.docker.internal
+      - POSTGRES_USE_POOLING=1
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_PASSWORD
+      - EMAIL_HOST
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - TELEGRAM_TOKEN
+      - TELEGRAM_BOT_URL
+      - SENTRY_DSN
+      - STRIPE_API_KEY
+      - STRIPE_PUBLIC_KEY
+      - STRIPE_WEBHOOK_SECRET
+    env_file:
+      - .env
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./static:/tmp/static
+    ports:
+      - "127.0.0.1:8815:8815"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100M"
+        max-file: "3"
+
+  cron:
+    <<: *app
+    command: make docker-run-cron
+    container_name: events_cron
+    networks:
+      - events_network
+    volumes:
+      - ./etc/crontab:/etc/crontab:ro
+    ports: []
+
+networks:
+  events_network:
+    driver: bridge

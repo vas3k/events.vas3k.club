@@ -31,10 +31,25 @@
         }
 
     .event-managers {
-        padding: 10px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-top: 10px;
     }
 
+        .event-managers-title {
+            font-weight: 500;
+            padding-bottom: 10px;
+        }
+
+        .event-managers a {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
     .event-contact {
+        margin-top: 20px;
         font-weight: 500;
     }
 
@@ -57,7 +72,7 @@
 .event-info {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
     padding: 10px 0 60px;
     font-size: 130%;
     font-weight: 500;

@@ -28,7 +28,7 @@ def pretty_date_range(context, date_from, date_to):
 
     # Same month and year
     if date_from.month == date_to.month and date_from.year == date_to.year:
-        return f"{from_day}-{to_day} {from_month} {from_year}"
+        return f"{from_day} – {to_day} {from_month} {from_year}"
 
     # Same year, different months
     elif date_from.year == date_to.year:

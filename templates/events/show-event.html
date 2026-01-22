@@ -15,16 +15,18 @@
             </a>
 
             {% if event.description %}
-                <div class="event-description">{{ event.description | markdown }}</div>
+                <div class="event-description">{{ event.description }}</div>
             {% endif %}
 
             {% if event.manager_users %}
                 <div class="event-managers">
+                    <div class="event-managers-title">Организуют 👇</div>
+
                     {% for manager in event.manager_users %}
-                        <div class="event-manager">
+                        <a href="{{ user.profile_url }}" target="_blank" class="event-manager">
                             <span class="avatar" style="background-image: url('{{ manager.avatar }}');"></span>
                             <span>{{ manager.full_name }}</span>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
             {% endif %}

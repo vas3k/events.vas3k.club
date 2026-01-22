@@ -31,6 +31,8 @@ RUN poetry install --no-interaction --no-ansi --no-root \
 
 # Copy project files
 COPY . .
+COPY etc/crontab /etc/crontab
+RUN chmod 600 /etc/crontab
 
 # Install the project itself
 RUN poetry install --no-interaction --no-ansi

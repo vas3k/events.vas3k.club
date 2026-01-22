@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template import loader
+from django.views.decorators.csrf import csrf_exempt
 
 from common.markdown.markdown import markdown_tg
 from notifications.email.sender import send_transactional_email
@@ -22,6 +23,7 @@ from vas3k_events.exceptions import BadRequest
 log = logging.getLogger()
 
 
+@csrf_exempt
 def stripe_webhook(request):
     try:
         event = parse_stripe_webhook_event(

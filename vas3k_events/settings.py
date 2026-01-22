@@ -19,6 +19,9 @@ DEBUG = (os.getenv("DEBUG") != "false")
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "events.vas3k.club"]
 INTERNAL_IPS = ["127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://events.vas3k.club",
+]
 
 ADMINS = [
     ("vas3k", "me@vas3k.ru"),
@@ -44,8 +47,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -75,6 +76,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "vas3k_events.wsgi.application"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Database

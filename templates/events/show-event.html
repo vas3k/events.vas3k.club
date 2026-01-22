@@ -11,7 +11,7 @@
     <div class="content event">
         <div class="event-sidebar">
             <a href="{% url "show_event" event.id %}">
-                <span class="event-image" style="background-image: url('{{ event.image }}');"></span>
+                <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
             </a>
 
             {% if event.description %}

@@ -10,7 +10,7 @@
     <div class="content ticket">
         <div class="event-sidebar ticket-sidebar">
             <a href="{% url "show_event" ticket.event.id %}">
-                <span class="event-image" style="background-image: url('{{ ticket.event.image }}');"></span>
+                <span class="event-image" style="background-image: url('{{ ticket.event.icon|default:ticket.event.image }}');"></span>
             </a>
 
             <div class="event-description">{{ ticket.event.description }}</div>
@@ -29,8 +29,8 @@
                 <div class="event-date">📅 {% pretty_date_range ticket.event.event_starts_at ticket.event.event_ends_at %}</div>
             {% endif %}
 
-            <div class="event-managers">
-                {% for manager in ticket.event.manager_users %}
+            {% if ticket.event.manager_users %}
+                <div class="event-managers">
                     <div class="event-managers">
                         <div class="event-managers-title">Организуют 👇</div>
 
@@ -41,8 +41,8 @@
                             </a>
                         {% endfor %}
                     </div>
-                {% endfor %}
-            </div>
+                </div>
+            {% endif %}
 
             {% if ticket.event.contact_url %}
                 <div class="event-contact">

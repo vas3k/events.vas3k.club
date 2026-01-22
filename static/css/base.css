@@ -100,10 +100,11 @@
 }
 
 .button {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none !important;
     padding: 15px 18px;
     box-sizing: border-box;
-    text-decoration: none;
     border-radius: var(--button-border-radius);
     background-color: var(--button-bg-color);
     border: var(--button-border);
@@ -114,6 +115,14 @@
     font-weight: 500;
     transition: 0.2s ease-out;
 }
+
+    @media only screen and (max-width : 600px) {
+        .button {
+            font-size: 90%;
+            line-height: 1.2em;
+            padding: 10px;
+        }
+    }
 
     .button-round {
         border-radius: 50%;

@@ -14,7 +14,7 @@
     {% block fonts %}
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}?version={{ settings.RELEASE }}">
     {% block css %}
     {% endblock %}
 
@@ -23,7 +23,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static "images/favicon/favicon-16x16.png" %}">
     <link rel="manifest" href="{% static "images/favicon/site.webmanifest" %}">
 
-    <script type="module" src="{% static 'js/main.js' %}"></script>
+    <script type="module" src="{% static 'js/main.js' %}?version={{ settings.RELEASE }}"></script>
     {% block js %}
     {% endblock %}
 </head>

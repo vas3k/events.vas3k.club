@@ -4,6 +4,8 @@ from pathlib import Path
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from utils.strings import random_string
+
 # Build paths inside the project like this: BASE_DIR / "subdir".
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -19,9 +21,8 @@ DEBUG = (os.getenv("DEBUG") != "false")
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost", "0.0.0.0", "events.vas3k.club"]
 INTERNAL_IPS = ["127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = [
-    "https://events.vas3k.club",
-]
+CSRF_TRUSTED_ORIGINS = ["https://events.vas3k.club"]
+RELEASE = random_string(length=8)
 
 ADMINS = [
     ("vas3k", "me@vas3k.ru"),

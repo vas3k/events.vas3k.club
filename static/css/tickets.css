@@ -11,6 +11,8 @@
     .ticket-item-icon {
         display: block;
         max-width: 130px;
+        overflow: hidden;
+        border-radius: var(--button-border-radius);
     }
 
     .ticket-item-info {

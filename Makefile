@@ -24,4 +24,5 @@ docker-run-production:
 		--enable-stdio-inheritance
 
 docker-run-cron:
-	crond -f -d 8
+	env >> /etc/environment
+	cron -f -l 2

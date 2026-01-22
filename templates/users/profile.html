@@ -17,12 +17,16 @@
         {% include "users/card.html" with user=request.user %}
 
         <div class="block-description profile-buttons">
-            <a href="https://vas3k.club/user/me/edit/profile/" class="button">Редактировать в Клубе</a>
-            <a href="{% url "login_club" %}" class="button">Синхронизировать данные</a>
+            <a href="https://vas3k.club/user/me/edit/profile/" class="button">✏️ Редактировать в Клубе</a>
+            <a href="{% url "login_club" %}" class="button">🔄 Синхронизировать данные</a>
         </div>
 
         <div class="animate-on-load">
             <div class="block-header profile-header">Мои билетики</div>
+
+            {% if not tickets %}
+                <div class="block-description block-description-center">У вас пока нет билетиков на наши ивенты...</div>
+            {% endif %}
 
             {% for ticket in tickets %}
                 {% include "tickets/ticket-item.html" with ticket=ticket %}

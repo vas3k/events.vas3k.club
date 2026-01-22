@@ -15,7 +15,7 @@ def show_event(request, event_id):
     my_tickets = []
     participants = []
     my_notifications = []
-    if request.user:
+    if request.user and request.user.is_authenticated():
         tickets = Ticket.objects.filter(event=event).select_related("user")
         participants = {t.user for t in tickets}
         if request.user in participants:

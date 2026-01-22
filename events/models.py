@@ -45,13 +45,24 @@ class Event(models.Model):
         return []
 
     def is_sale_active(self):
+        if self.is_sold_out or not self.sale_starts_at:
+            return False
+
+        if not self.sale_ends_at:
+            return self.sale_starts_at <= datetime.utcnow() and not self.is_sold_out
+
         return self.sale_starts_at <= datetime.utcnow() <= self.sale_ends_at and not self.is_sold_out
 
     def is_sale_starts_soon(self):
-        return self.sale_starts_at > datetime.utcnow() and not self.is_sold_out
+        if self.is_sold_out or not self.sale_starts_at:
+            return False
+        return self.sale_starts_at > datetime.utcnow()
 
     def seconds_until_sale_starts(self):
-        if self.sale_starts_at > datetime.utcnow():
+        if self.is_sold_out:
+            return 0
+
+        if self.sale_starts_at and self.sale_starts_at > datetime.utcnow():
             return int((self.sale_starts_at - datetime.utcnow()).total_seconds())
         return 0
 

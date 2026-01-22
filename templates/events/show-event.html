@@ -209,6 +209,10 @@
                         <div class="block-description">
                             <a href="{{ event.waitlist_url }}" class="button">Записаться в вейтлист</a>
                         </div>
+                    {% else %}
+                        <div class="block-description">
+                            Все свободные места на этот ивент закончились :(
+                        </div>
                     {% endif %}
                 </div>
             {% endif %}

@@ -1,13 +1,12 @@
-{% load static %}{% load emails %}<!DOCTYPE html>
+{% load static %}{% load text_filters %}<!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <title>Вастрик Ивенты</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    {% block og_meta %}{% endblock %}
-    <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,500,700&display=swap&subset=cyrillic-ext" rel="stylesheet">
-    <style type="text/css">
+<head>
+<title>Вастрик Ивенты</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:400,500,700&display=swap&subset=cyrillic-ext" rel="stylesheet">
+<style type="text/css">
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
         img { -ms-interpolation-mode: bicubic; }
@@ -355,9 +354,8 @@
             }
         }
     </style>
-    {% block css %}{% endblock %}
-  </head>
-  <body style="margin: 0 !important; padding: 0 !important;">
+</head>
+<body style="margin: 0 !important; padding: 0 !important;">
     <!-- This ghost table is used to constrain the width in Outlook. The role attribute is set to presentation to prevent it from being read by screenreaders. -->
     <!--[if (gte mso 9)|(IE)]>
     <table cellspacing="0" cellpadding="0" border="0" width="720" align="center" role="presentation"><tr><td>
@@ -394,5 +392,5 @@
     <!--[if (gte mso 9)|(IE)]>
     </td></tr></table>
     <![endif]-->
-  </body>
+</body>
 </html>

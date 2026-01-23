@@ -8,9 +8,6 @@
 {% block content %}
     <div class="content event">
         <div class="event-sidebar">
-            <a href="{% url "show_event" event.id %}">
-                <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
-            </a>
             <div class="event-edit-button">
                 <a href="{% url "edit_event_ticket_types" event.id %}" class="button">← Назад к типам билетов</a>
             </div>

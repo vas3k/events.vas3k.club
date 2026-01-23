@@ -231,6 +231,13 @@
     }
 }
 
+img.emoji {
+   height: 1.2em;
+   width: 1.2em;
+   margin: 0 .05em 0 .1em;
+   vertical-align: -0.25em;
+}
+
 .animate-on-load > * {
     animation: fadeInUp 0.5s ease backwards;
 }

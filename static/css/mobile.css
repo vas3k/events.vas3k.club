@@ -33,6 +33,7 @@
 
     .ticket-item {
         flex-wrap: wrap;
+        flex-direction: column;
         justify-content: center;
     }
 

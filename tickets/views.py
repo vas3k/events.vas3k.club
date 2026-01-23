@@ -5,11 +5,12 @@ from authlib.oauth1.rfc5849.errors import MethodNotAllowedError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q, F
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers
+from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers, Event
 from tickets.models import Ticket, TicketChecklistAnswers
 
 from tickets.helpers import parse_stripe_webhook_event, deactivate_payment_link
@@ -84,6 +85,13 @@ def stripe_webhook(request):
                     if ticket_type.limit_quantity >= 0 and ticket_type.stripe_payment_link_id:
                         if ticket_sales_count >= ticket_type.limit_quantity:
                             deactivate_payment_link(ticket_type.stripe_payment_link_id)
+
+                            # Check if the whole event is sold out
+                            any_active_tickets_left = TicketType.objects.filter(
+                                event=ticket_type.event,
+                            ).filter(Q(limit_quantity__lt=0) | Q(tickets_sold__lt=F("limit_quantity")))
+                            if not any_active_tickets_left:
+                                Event.objects.filter(id=ticket_type.event).update(is_sold_out=True)
 
             # Send confirmation emails (unique by ticket code)
             for ticket_type in ticket_types_processed:

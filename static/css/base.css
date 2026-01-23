@@ -240,3 +240,125 @@
     .animate-on-load > *:nth-child(3) { animation-delay: 0.2s; }
     .animate-on-load > *:nth-child(4) { animation-delay: 0.25s; }
     .animate-on-load > *:nth-child(5) { animation-delay: 0.3s; }
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+    .form-group label {
+        font-weight: 600;
+        font-size: 110%;
+        color: var(--text-color);
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="number"],
+    .form-group input[type="url"],
+    .form-group input[type="email"],
+    .form-group input[type="datetime-local"],
+    .form-group input[type="date"],
+    .form-group input[type="time"],
+    .form-group input[type="password"],
+    .form-group input[type="search"],
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        font-size: 100%;
+        font-family: var(--sans-font);
+        border-radius: var(--input-border-radius);
+    }
+
+    .form-group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form-group-checkbox {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .form-group-checkbox label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .form-group-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+    .form-group-radio {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .form-group-radio label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .form-group-radio input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+    .form-help {
+        font-size: 90%;
+        opacity: 0.7;
+        font-style: italic;
+        margin-top: -4px;
+    }
+
+    .form-error {
+        color: #ff1917;
+        font-size: 90%;
+        font-weight: 500;
+        margin-top: -4px;
+    }
+
+        .form-error ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+    @media only screen and (max-width : 800px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+    @media only screen and (max-width : 600px) {
+        .form-actions {
+            flex-direction: column;
+        }
+    }

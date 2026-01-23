@@ -4,6 +4,7 @@
 
     --block-border-radius: 15px;
     --button-border-radius: 15px;
+    --input-border-radius: 10px;
 
     --button-color: #FFF;
     --button-bg-color: #333;
@@ -63,28 +64,26 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-    @media only screen and (min-device-width : 768px)
-    and (max-device-width : 1024px)
-    and (orientation : portrait) {
-        body {
-            font-size: 14px;
-        }
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    body {
+        font-size: 14px;
     }
+}
 
-    @media only screen and (max-width : 800px) {
-        body {
-            font-size: 13px;
-        }
+@media only screen and (max-width : 800px) {
+    body {
+        font-size: 13px;
     }
+}
 
 a {
     color: var(--link-color);
     transition: color linear .1s;
 }
 
-    a:hover {
-        color: var(--link-hover-color);
-    }
+a:hover {
+    color: var(--link-hover-color);
+}
 
 
 figure {
@@ -100,7 +99,11 @@ select {
     background-color: var(--select-bg-color);
 }
 
-h1, h2, h3, h4, h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
     scroll-margin-top: 30px;
 }
 
@@ -121,11 +124,10 @@ input[type=url],
 textarea,
 select,
 .CodeMirror,
-.input-select
-{
+.input-select {
     -webkit-appearance: none;
     border: none;
-    box-shadow: 0 4px 8px -2px rgba(9,30,66,.25),0 0 0 1px rgba(9,30,66,.08);
+    box-shadow: 0 4px 8px -2px rgba(9, 30, 66, .25), 0 0 0 1px rgba(9, 30, 66, .08);
     outline: none;
     padding: 8px 15px;
     resize: vertical;
@@ -136,33 +138,33 @@ select,
     color: var(--input-color);
 }
 
-    input:focus,
-    textarea:focus,
-    .CodeMirror-focused {
-        box-shadow: 0 4px 12px -2px rgba(9,30,66,.45),0 0 0 1px rgba(9,30,66,.32);
-    }
+input:focus,
+textarea:focus,
+.CodeMirror-focused {
+    box-shadow: 0 4px 12px -2px rgba(9, 30, 66, .45), 0 0 0 1px rgba(9, 30, 66, .32);
+}
 
-        .editor-toolbar {
-            border: none;
-            box-shadow: 0 4px 8px -2px rgba(9,30,66,.25), 0 0 0 1px rgba(9,30,66,.08);
-            background: var(--input-toolbar-bg);
-        }
+.editor-toolbar {
+    border: none;
+    box-shadow: 0 4px 8px -2px rgba(9, 30, 66, .25), 0 0 0 1px rgba(9, 30, 66, .08);
+    background: var(--input-toolbar-bg);
+}
 
-        .editor-toolbar button {
-            color: var(--input-toolbar-button-color);
-        }
+.editor-toolbar button {
+    color: var(--input-toolbar-button-color);
+}
 
-        .editor-toolbar button:hover {
-            background: var(--input-bg-color);
-        }
+.editor-toolbar button:hover {
+    background: var(--input-bg-color);
+}
 
-    input:hover,
-    textarea:hover {
-        transform: scale(1.01);
-        transition: all linear .2s;
-    }
+input:hover,
+textarea:hover {
+    transform: scale(1.01);
+    transition: all linear .2s;
+}
 
-pre > code {
+pre>code {
     display: block;
     padding: 15px 20px;
     white-space: pre-wrap;

@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+    {% if ticket_type %}Редактировать{% else %}Создать{% endif %} тип билета — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="content event">
+        <div class="event-sidebar">
+            <a href="{% url "show_event" event.id %}">
+                <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
+            </a>
+            <div class="event-edit-button">
+                <a href="{% url "edit_event_ticket_types" event.id %}" class="button">← Назад к типам билетов</a>
+            </div>
+        </div>
+
+        <div class="event-main animate-on-load">
+            <div class="event-title">{% if ticket_type %}Редактировать{% else %}Создать{% endif %} тип билета</div>
+
+            <div class="block event-edit-form">
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}">{{ form.name.label }}</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="form-error">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="form-error">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+                            {{ form.price }}
+                            {% if form.price.errors %}
+                                <div class="form-error">{{ form.price.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.currency.id_for_label }}">{{ form.currency.label }}</label>
+                            {{ form.currency }}
+                            {% if form.currency.errors %}
+                                <div class="form-error">{{ form.currency.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.url.id_for_label }}">{{ form.url.label }}</label>
+                        {{ form.url }}
+                        {% if form.url.errors %}
+                            <div class="form-error">{{ form.url.errors }}</div>
+                        {% endif %}
+                        <div class="form-help">Ссылка на страницу покупки билета</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.stripe_product_id.id_for_label }}">{{ form.stripe_product_id.label }}</label>
+                            {{ form.stripe_product_id }}
+                            {% if form.stripe_product_id.errors %}
+                                <div class="form-error">{{ form.stripe_product_id.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.stripe_payment_link_id.id_for_label }}">{{ form.stripe_payment_link_id.label }}</label>
+                            {{ form.stripe_payment_link_id }}
+                            {% if form.stripe_payment_link_id.errors %}
+                                <div class="form-error">{{ form.stripe_payment_link_id.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.welcome_message_title.id_for_label }}">{{ form.welcome_message_title.label }}</label>
+                        {{ form.welcome_message_title }}
+                        {% if form.welcome_message_title.errors %}
+                            <div class="form-error">{{ form.welcome_message_title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.welcome_message_text.id_for_label }}">{{ form.welcome_message_text.label }}</label>
+                        {{ form.welcome_message_text }}
+                        {% if form.welcome_message_text.errors %}
+                            <div class="form-error">{{ form.welcome_message_text.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.limit_quantity.id_for_label }}">{{ form.limit_quantity.label }}</label>
+                            {{ form.limit_quantity }}
+                            {% if form.limit_quantity.errors %}
+                                <div class="form-error">{{ form.limit_quantity.errors }}</div>
+                            {% endif %}
+                            <div class="form-help">-1 для неограниченного количества</div>
+                        </div>
+                        <div class="form-group form-group-checkbox">
+                            <label>
+                                {{ form.is_visible }}
+                                {{ form.is_visible.label }}
+                            </label>
+                            {% if form.is_visible.errors %}
+                                <div class="form-error">{{ form.is_visible.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="button button-blue">Сохранить</button>
+                        <a href="{% url "edit_event_ticket_types" event.id %}" class="button">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

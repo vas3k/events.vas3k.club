@@ -1,6 +1,7 @@
 services:
   events_app: &app
-    image: ghcr.io/vas3k/events.vas3k.club:${GITHUB_SHA:-latest}
+#    image: ghcr.io/vas3k/events.vas3k.club:${GITHUB_SHA:-latest}
+    build: .
     command: make docker-run-production
     container_name: events_app
     networks:

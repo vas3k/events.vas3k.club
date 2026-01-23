@@ -114,12 +114,10 @@ class TicketType(models.Model):
 
 class TicketTypeChecklist(models.Model):
     TYPE_SELECT = "select"
-    TYPE_LIMITED_SELECT = "limited_select"
     TYPE_TEXT = "text"
     TYPE_LINK = "link"
     TYPES = [
         (TYPE_SELECT, TYPE_SELECT),
-        (TYPE_LIMITED_SELECT, TYPE_LIMITED_SELECT),
         (TYPE_TEXT, TYPE_TEXT),
         (TYPE_LINK, TYPE_LINK),
     ]

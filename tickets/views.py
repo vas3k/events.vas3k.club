@@ -15,7 +15,7 @@ from tickets.models import Ticket, TicketChecklistAnswers
 from tickets.helpers import parse_stripe_webhook_event, deactivate_payment_link
 from notifications.helpers import send_notifications
 from users.models import User
-from vas3k_events.exceptions import BadRequest
+from vas3k_events.exceptions import BadRequest, RateLimitException
 
 log = logging.getLogger()
 
@@ -145,15 +145,34 @@ def update_ticket_checklist_answer(request, ticket_id):
     if request.method != "POST":
         raise MethodNotAllowedError()
 
+    checklist = get_object_or_404(TicketTypeChecklist, id=request.POST["checklist_id"])
+    answer_value = request.POST["answer_value"]
+
+    # Check limited select {"item": "...", "limit": 20}
+    if answer_value and checklist.type == TicketTypeChecklist.TYPE_SELECT:
+        if isinstance(checklist.value, list):
+            select_item = next((v for v in checklist.value if v.get("item") == answer_value), None)
+            if select_item.get("limit"):
+                answer_count = TicketChecklistAnswers.objects.filter(
+                    ticket=ticket,
+                    checklist=checklist,
+                    answer=answer_value,
+                ).exclude(user=request.user).count()
+                if answer_count >= select_item["limit"]:
+                    raise RateLimitException(
+                        title=f"Превышен лимит на {answer_value}",
+                        message=f"К сожалению, только {select_item['limit']} человек может выбрать эту опцию. "
+                                f"Попробуйте выбрать другую."
+                    )
+
+    # Write user answer to the database
     TicketChecklistAnswers.objects.update_or_create(
         ticket=ticket,
         user=request.user,
-        checklist_id=request.POST["checklist_id"],
+        checklist=checklist,
         defaults=dict(
             answer=request.POST["answer_value"],
         )
     )
-
-    # TODO: check limits if answer is limited
 
     return redirect("show_ticket", ticket_id=ticket.id)

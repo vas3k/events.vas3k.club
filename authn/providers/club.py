@@ -30,7 +30,7 @@ def parse_badge(token):
             headers={
                 "Authorization": f"{token['token_type']} {token['access_token']}"
             }
-        ).json()
+        ).text
     except Exception as ex:
         log.exception(ex)
         return None

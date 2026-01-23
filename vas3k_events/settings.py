@@ -132,7 +132,7 @@ EMAIL_PORT = os.getenv("EMAIL_PORT", 587)
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Вастрик Ивенты <club@vas3k.club>")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Вастрик Ивенты <events@vas3k.club>")
 
 # Telegram
 
@@ -180,7 +180,7 @@ CLUB_OPENID_CONFIG = {
     "client_secret": os.getenv("CLUB_OPENID_CONFIG_SECRET"),
     "api_base_url": CLUB_BASE_URL,
     "server_metadata_url": f"{CLUB_BASE_URL}/.well-known/openid-configuration",
-    "client_kwargs": {"scope": "openid"},
+    "client_kwargs": {"scope": "openid contact"},
 }
 
 # Sentry

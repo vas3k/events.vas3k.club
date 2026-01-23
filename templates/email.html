@@ -1,0 +1,398 @@
+{% load static %}{% load emails %}<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title>Вастрик Ивенты</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    {% block og_meta %}{% endblock %}
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu:400,500,700&display=swap&subset=cyrillic-ext" rel="stylesheet">
+    <style type="text/css">
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; }
+
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body {
+            color: #000000;
+            font-family: Ubuntu, serif;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            font-size: 17px;
+            background-color: #FFF;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            background-color: white;
+            color: #2b2b2b;
+            font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 28px;
+            margin: 0 auto;
+            max-width: 720px;
+            padding: 20px 10px 20px 10px;
+        }
+
+        a {
+            color: #000000;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            color: #B92B27 !important;
+            text-decoration: none !important;
+        }
+
+        p {
+            font-weight: 400;
+            line-height: 1.5em;
+            margin-bottom: 24px;
+        }
+
+            footer p {
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 1.5em;
+                margin-top: 48px;
+            }
+
+        .center {
+            text-align: center;
+        }
+
+        .editorial {
+            font-size: 20px !important;
+        }
+
+        img {
+            border-radius: 4px;
+            display: block;
+            max-width: 100%;
+            min-width: 100px;
+            width: 100%;
+        }
+
+        h1 {
+
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.4em;
+            margin: 48px 0;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 500;
+            line-height: 1.4em;
+            margin: 100px 0 35px 0;
+        }
+
+        h3 {
+            font-size: 22px;
+            font-weight: 500;
+            line-height: 1.3em;
+            margin: 24px 0 24px 0;
+        }
+
+        small {
+            color: #999; font-size: 14px; font-weight: 300;
+        }
+
+        blockquote {
+            border-left: solid 10px #333;
+            padding-left: 20px;
+            margin-left: 0;
+        }
+
+        ul {
+            padding-left: 35px;
+        }
+
+            li {
+                margin-bottom: 17px;
+            }
+
+        /* iOS BLUE LINKS */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+
+        /* GMAIL BLUE LINKS */
+        u + #body a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        /* SAMSUNG MAIL BLUE LINKS */
+        #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+            font-size: inherit;
+            font-family: inherit;
+            font-weight: inherit;
+            line-height: inherit;
+        }
+
+        article {
+            margin: 0 0 48px 0;
+        }
+
+        figure {
+            margin: 20px 0 30px 0;
+        }
+
+        .block {
+            padding: 20px;
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            box-shadow: 10px 15px 40px rgba(83, 91, 110, 0.11);
+            background-color: #FFF;
+            border-radius: 15px;
+        }
+
+        .ratio-16-9 {
+            display: block;
+            width: 100%;
+            padding-top: 56.25%;
+            position: relative;
+        }
+
+            .ratio-16-9 > * {
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+        .video-preview {
+            background-size: cover;
+            background-position: 50% 50%;
+            position: relative;
+            background-color: #000;
+        }
+
+            .video-preview::before {
+                content: "▶︎";
+                font-size: 100px;
+                color: #FFF;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                line-height: 100px;
+                height: 100px;
+                width: 100px;
+                margin-left: -50px;
+                margin-top: -40px;
+            }
+
+        .issue {
+            display: block;
+            font-size: 24px;
+            line-height: 24px;
+            padding-top: 15px;
+        }
+
+        .post {
+            font-size: 16px;
+        }
+
+            .post-footer {
+                font-size: 14px;
+                color: #999999;
+            }
+
+        .label {
+            display: inline-block;
+            vertical-align: middle;
+            background-color: #000000;
+            height: 1.6em;
+            line-height: 1.5em;
+            overflow: hidden;
+            font-size: 75%;
+            border-radius: 5px;
+        }
+
+            .label-title {
+                display: inline-block;
+                color: #FFFFFF;
+                font-weight: normal;
+                padding: 0 0.6em 0;
+                font-size: 90%;
+            }
+
+        .user {
+            display: block;
+            width: 100%;
+            font-size: 16px;
+            line-height: 1.4em;
+            text-decoration: none;
+            font-weight: 400;
+            margin: 70px 0 100px;
+        }
+
+            .user-avatar {
+                display: block;
+                float: left;
+                width: 50px;
+                height: 50px;
+                min-width: 50px;
+                min-height: 50px;
+                background-size: cover;
+                background-position: 50% 50%;
+                margin: 0;
+                margin-right: 10px;
+                border-radius: 50%;
+            }
+
+            .user-title-small {
+                font-size: 17px;
+            }
+
+        .avatar-small {
+            width: 24px;
+            height: 24px;
+            min-width: 24px;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0;
+            position: relative;
+            top: -2px;
+            object-fit: cover;
+        }
+
+        .comment {
+            font-size: 16px;
+        }
+
+        .upvotes {
+            display: block;
+            float: right;
+            background-color: #1B1B1C;
+            color: #FFF;
+            border-radius: 10px;
+            padding: 6px 10px 6px;
+            font-size: 16px;
+            font-weight: bold;
+            line-height: 1em;
+            margin-left: 10px;
+            margin-top: 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 17px 30px;
+            box-sizing: border-box;
+            text-decoration: none;
+            border-radius: 20px;
+            background-color: #000;
+            border: solid 2px #000;
+            color: #FFF;
+            text-align: center;
+            cursor: pointer;
+            line-height: 1em;
+            font-size: 25px;
+            margin: 20px 0 30px;
+        }
+
+            .button:hover {
+                color: #000 !important;
+                background-color: #FFF !important;
+                border-color: #000 !important;
+            }
+
+        .comment h3,
+        .user h3,
+        .post h3 {
+            margin-top: 0;
+        }
+
+        /* Desktop styles */
+        @media screen and (min-width: 600px) {
+            h1 { font-size: 52px !important; }
+            h2 { font-size: 34px !important; }
+            h3 { font-size: 25px !important; }
+
+            .user-avatar {
+                width: 70px;
+                height: 70px;
+                min-width: 70px;
+                min-height: 70px;
+                margin-right: 20px;
+            }
+
+            .comment, .user, .post {
+                font-size: 17px;
+            }
+
+            .upvotes {
+                font-size: 22px;
+                padding: 8px 18px 8px;
+            }
+        }
+
+        @media screen and (min-width: 500px) {
+            .container {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+        }
+    </style>
+    {% block css %}{% endblock %}
+  </head>
+  <body style="margin: 0 !important; padding: 0 !important;">
+    <!-- This ghost table is used to constrain the width in Outlook. The role attribute is set to presentation to prevent it from being read by screenreaders. -->
+    <!--[if (gte mso 9)|(IE)]>
+    <table cellspacing="0" cellpadding="0" border="0" width="720" align="center" role="presentation"><tr><td>
+    <![endif]-->
+    <!-- The role and aria-label attributes are added to wrap the email content as an article for screen readers. Some of them will read out the aria-label as the title of the document, so use something like "An email from Your Brand Name" to make it recognizable. -->
+    <!-- Default styling of text is applied to the wrapper div. Be sure to use text that is large enough and has a high contrast with the background color for people with visual impairments. -->
+    <div role="article" lang="en" class="container">
+
+        <header>
+            {% block logo %}
+                <a href="https://events.vas3k.club">
+                    <img src="{{ settings.APP_HOST }}{% static "images/favicon/android-chrome-192x192.png" %}" alt="" height="80" width="80" style="display:inline-block;width: 80px;height: 80px;min-width: 80px; margin-top: 30px;">
+                </a>
+            {% endblock %}
+            <h1>
+                {% block title %}
+                    {{ title }}
+                {% endblock %}
+            </h1>
+        </header>
+
+        <main>
+            {% block body %}
+                {{ message | markdown }}
+            {% endblock %}
+        </main>
+
+        <footer>
+            {% block footer %}{% endblock %}
+            {% block unsubscribe %}{% endblock %}
+        </footer>
+
+    </div>
+    <!--[if (gte mso 9)|(IE)]>
+    </td></tr></table>
+    <![endif]-->
+  </body>
+</html>

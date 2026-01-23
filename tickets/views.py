@@ -7,16 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
-from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 
-from common.markdown.markdown import markdown_tg
-from notifications.email.sender import send_transactional_email
-from notifications.telegram.sender import send_telegram_message, Chat
 from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers
 from tickets.models import Ticket, TicketChecklistAnswers
 
-from tickets.helpers import parse_stripe_webhook_event
+from tickets.helpers import parse_stripe_webhook_event, deactivate_payment_link
+from notifications.helpers import send_notifications
 from users.models import User
 from vas3k_events.exceptions import BadRequest
 
@@ -90,23 +87,15 @@ def stripe_webhook(request):
 
             # Send confirmation emails (unique by ticket code)
             for ticket_type in ticket_types_processed:
-                confirmation_template = loader.get_template("emails/custom_markdown.html")
-                send_transactional_email(
-                    recipient=customer_email,
-                    subject=ticket_type.welcome_message_title,
-                    html=confirmation_template.render({
-                        "user": user,
-                        "title": ticket_type.welcome_message_title,
-                        "body": ticket_type.welcome_message_text,
-                    })
-                )
-
-                if user and user.telegram_id:
-                    send_telegram_message(
-                        chat=Chat(id=user.telegram_id),
-                        text=f"<b>{ticket_type.welcome_message_title}</b>\n\n"
-                             f"{markdown_tg(ticket_type.welcome_message_text)}",
+                try:
+                    send_notifications(
+                        email_address=customer_email,
+                        telegram_id=user.telegram_id if user else None,
+                        message_title=ticket_type.welcome_message_title,
+                        message_text=ticket_type.welcome_message_text,
                     )
+                except:
+                    log.exception(f"Ticket notification failed")
 
             return HttpResponse("[ok]", status=200)
 
@@ -115,20 +104,6 @@ def stripe_webhook(request):
             return HttpResponse(f"Stripe API error: {str(e)}", status=500)
 
     return HttpResponse("[unknown event]", status=400)
-
-
-def deactivate_payment_link(payment_link_id):
-    try:
-        stripe.PaymentLink.modify(
-            payment_link_id,
-            active=False,
-            api_key=settings.STRIPE_API_KEY
-        )
-        log.info(f"Payment link {payment_link_id} has been deactivated due to sales limit")
-        return True
-    except stripe.error.StripeError as e:
-        log.error(f"Failed to deactivate payment link {payment_link_id}: {str(e)}")
-        return False
 
 
 @login_required

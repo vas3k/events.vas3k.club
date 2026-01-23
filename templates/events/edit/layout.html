@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% load static %}
+{% load text_filters %}
+{% load events %}
+
+{% block title %}
+    Редактировать {{ event.title }} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="content event">
+        <div class="event-sidebar">
+            <a href="{% url "show_event" event.id %}">
+                <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
+            </a>
+
+            <div class="event-edit-menu">
+                <a href="{% url "edit_event" event.id %}" class="event-edit-menu-item {% if section == "event" %}active{% endif %}">
+                    📝 Событие
+                </a>
+                <a href="{% url "edit_event_ticket_types" event.id %}" class="event-edit-menu-item {% if section == "ticket-types" %}active{% endif %}">
+                    🎟️ Типы билетов
+                </a>
+                <a href="{% url "edit_event_tickets_sold" event.id %}" class="event-edit-menu-item {% if section == "tickets-sold" %}active{% endif %}">
+                    💰 Проданные билеты
+                </a>
+                <a href="{% url "edit_event_notifications" event.id %}" class="event-edit-menu-item {% if section == "notifications" %}active{% endif %}">
+                    🔔 Уведомления
+                </a>
+            </div>
+
+            <div class="event-edit-button">
+                <a href="{% url "show_event" event.id %}" class="button">← Назад к событию</a>
+            </div>
+        </div>
+
+        <div class="event-main animate-on-load">
+            {% block edit_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

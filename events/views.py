@@ -68,7 +68,7 @@ def edit_event(request, event_id):
     else:
         form = EventForm(instance=event)
 
-    return render(request, "events/edit-event.html", {
+    return render(request, "events/edit/event.html", {
         "form": form,
         "event": event,
         "section": "event",
@@ -83,7 +83,7 @@ def edit_event_ticket_types(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     ticket_types = TicketType.objects.filter(event=event).order_by("created_at")
 
-    return render(request, "events/edit-event.html", {
+    return render(request, "events/edit/ticket-types.html", {
         "event": event,
         "section": "ticket-types",
         "ticket_types": ticket_types,
@@ -101,7 +101,7 @@ def edit_event_tickets_sold(request, event_id):
         count=Count("id")
     )
 
-    return render(request, "events/edit-event.html", {
+    return render(request, "events/edit/tickets-sold.html", {
         "event": event,
         "section": "tickets-sold",
         "tickets": tickets,
@@ -117,7 +117,7 @@ def edit_event_notifications(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     subscriptions = EventSubscription.objects.filter(event=event).select_related("user").order_by("-created_at")
 
-    return render(request, "events/edit-event.html", {
+    return render(request, "events/edit/notifications.html", {
         "event": event,
         "section": "notifications",
         "subscriptions": subscriptions,

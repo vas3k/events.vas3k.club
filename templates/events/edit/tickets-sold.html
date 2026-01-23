@@ -1,0 +1,48 @@
+{% extends "events/edit/layout.html" %}
+
+{% block edit_content %}
+    <div class="event-title">Проданные билеты</div>
+
+    {% if ticket_stats %}
+        <div class="block">
+            <div class="block-header">📊 Статистика по типам</div>
+            <div class="ticket-stats-list">
+                {% for stat in ticket_stats %}
+                    <div class="ticket-stat-item">
+                        <span class="ticket-stat-name">{{ stat.ticket_type__name|default:"Без типа" }}</span>
+                        <span class="ticket-stat-count">{{ stat.count }} шт.</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {% if tickets %}
+        <div class="block">
+            <div class="block-header">💎 Список билетов</div>
+            <div class="tickets-list">
+                {% for ticket in tickets %}
+                    <div class="ticket-item">
+                        <div class="ticket-item-info">
+                            <div class="ticket-item-code">{{ ticket.code }}</div>
+                            <div class="ticket-item-type">{{ ticket.ticket_type.name }}</div>
+                            {% if ticket.user %}
+                                <div class="ticket-item-user">
+                                    <span class="avatar" style="background-image: url('{{ ticket.user.avatar }}');"></span>
+                                    <span>{{ ticket.user.full_name }}</span>
+                                </div>
+                            {% elif ticket.customer_email %}
+                                <div class="ticket-item-email">{{ ticket.customer_email }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="ticket-item-date">{{ ticket.created_at|date:"d.m.Y H:i" }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="block">
+            <div class="block-description">Пока нет проданных билетов.</div>
+        </div>
+    {% endif %}
+{% endblock %}

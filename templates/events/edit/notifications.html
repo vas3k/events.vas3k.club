@@ -1,0 +1,38 @@
+{% extends "events/edit/layout.html" %}
+
+{% block edit_content %}
+    <div class="event-title">Уведомления</div>
+
+    {% if subscriptions %}
+        <div class="block">
+            <div class="block-header">🔔 Подписки на уведомления</div>
+            <div class="subscriptions-list">
+                {% for subscription in subscriptions %}
+                    <div class="subscription-item">
+                        <div class="subscription-info">
+                            {% if subscription.user %}
+                                <div class="subscription-user">
+                                    <span class="avatar" style="background-image: url('{{ subscription.user.avatar }}');"></span>
+                                    <span>{{ subscription.user.full_name }}</span>
+                                </div>
+                            {% endif %}
+                            <div class="subscription-email">{{ subscription.email }}</div>
+                            <div class="subscription-topic">{{ subscription.topic }}</div>
+                        </div>
+                        <div class="subscription-actions">
+                            <div class="subscription-date">{{ subscription.created_at|date:"d.m.Y H:i" }}</div>
+                            <form method="POST" action="{% url "delete_notification" event.id subscription.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-red button-small" onclick="return confirm('Вы уверены, что хотите удалить подписку на уведомления для {{ subscription.email }} ({{ subscription.topic }})?')">🗑️ Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="block">
+            <div class="block-description">Пока нет подписок на уведомления.</div>
+        </div>
+    {% endif %}
+{% endblock %}

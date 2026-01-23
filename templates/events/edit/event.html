@@ -1,0 +1,161 @@
+{% extends "events/edit/layout.html" %}
+
+{% block edit_content %}
+    <div class="event-title">Редактировать событие</div>
+
+    <div class="block event-edit-form">
+        <form method="POST" action="{% url "edit_event" event.id %}">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <div class="form-error">{{ form.title.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                    <div class="form-error">{{ form.description.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                        <div class="form-error">{{ form.location.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.location_url.id_for_label }}">{{ form.location_url.label }}</label>
+                    {{ form.location_url }}
+                    {% if form.location_url.errors %}
+                        <div class="form-error">{{ form.location_url.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.sale_starts_at.id_for_label }}">{{ form.sale_starts_at.label }}</label>
+                    {{ form.sale_starts_at }}
+                    {% if form.sale_starts_at.errors %}
+                        <div class="form-error">{{ form.sale_starts_at.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.sale_ends_at.id_for_label }}">{{ form.sale_ends_at.label }}</label>
+                    {{ form.sale_ends_at }}
+                    {% if form.sale_ends_at.errors %}
+                        <div class="form-error">{{ form.sale_ends_at.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.event_starts_at.id_for_label }}">{{ form.event_starts_at.label }}</label>
+                    {{ form.event_starts_at }}
+                    {% if form.event_starts_at.errors %}
+                        <div class="form-error">{{ form.event_starts_at.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.event_ends_at.id_for_label }}">{{ form.event_ends_at.label }}</label>
+                    {{ form.event_ends_at }}
+                    {% if form.event_ends_at.errors %}
+                        <div class="form-error">{{ form.event_ends_at.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.icon.id_for_label }}">{{ form.icon.label }}</label>
+                    {{ form.icon }}
+                    {% if form.icon.errors %}
+                        <div class="form-error">{{ form.icon.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                        <div class="form-error">{{ form.image.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.intro.id_for_label }}">{{ form.intro.label }}</label>
+                {{ form.intro }}
+                {% if form.intro.errors %}
+                    <div class="form-error">{{ form.intro.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.managers.id_for_label }}">{{ form.managers.label }}</label>
+                {{ form.managers }}
+                {% if form.managers.errors %}
+                    <div class="form-error">{{ form.managers.errors }}</div>
+                {% endif %}
+                <div class="form-help">Список slug'ов пользователей через запятую</div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.contact_url.id_for_label }}">{{ form.contact_url.label }}</label>
+                    {{ form.contact_url }}
+                    {% if form.contact_url.errors %}
+                        <div class="form-error">{{ form.contact_url.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.waitlist_url.id_for_label }}">{{ form.waitlist_url.label }}</label>
+                    {{ form.waitlist_url }}
+                    {% if form.waitlist_url.errors %}
+                        <div class="form-error">{{ form.waitlist_url.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="{{ form.index.id_for_label }}">{{ form.index.label }}</label>
+                    {{ form.index }}
+                    {% if form.index.errors %}
+                        <div class="form-error">{{ form.index.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group form-group-checkbox">
+                    <label>
+                        {{ form.is_visible }}
+                        {{ form.is_visible.label }}
+                    </label>
+                    {% if form.is_visible.errors %}
+                        <div class="form-error">{{ form.is_visible.errors }}</div>
+                    {% endif %}
+                </div>
+                <div class="form-group form-group-checkbox">
+                    <label>
+                        {{ form.is_sold_out }}
+                        {{ form.is_sold_out.label }}
+                    </label>
+                    {% if form.is_sold_out.errors %}
+                        <div class="form-error">{{ form.is_sold_out.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="button button-blue">Сохранить изменения</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

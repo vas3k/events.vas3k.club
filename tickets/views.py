@@ -154,7 +154,15 @@ def update_ticket_checklist_answer(request, ticket_id):
         raise MethodNotAllowedError()
 
     checklist = get_object_or_404(TicketTypeChecklist, id=request.POST["checklist_id"])
-    answer_value = request.POST["answer_value"]
+    answer_value = request.POST.get("answer_value") or ""
+
+    if not answer_value:
+        TicketChecklistAnswers.objects.filter(
+            ticket=ticket,
+            user=request.user,
+            checklist=checklist,
+        ).delete()
+        return redirect("show_ticket", ticket_id=ticket.id)
 
     # Check limited select {"item": "...", "limit": 20}
     if answer_value and checklist.type == TicketTypeChecklist.TYPE_SELECT:

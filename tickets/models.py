@@ -23,6 +23,9 @@ class Ticket(models.Model):
         db_table = "tickets"
         ordering = ["-created_at"]
 
+    def has_checklist(self):
+        return bool(self.ticket_type.checklists)
+
 
 class TicketChecklistAnswers(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)

@@ -64,18 +64,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=128, null=True)
     avatar = models.URLField(null=True, blank=True)
-    secret_hash = models.CharField(max_length=24, unique=True)
+    secret_hash = models.CharField(max_length=24, unique=True)  # TODO: delete
 
-    city = models.CharField(max_length=128, null=True)
-    country = models.CharField(max_length=128, null=True)
-    company = models.TextField(null=True)
-    position = models.TextField(null=True)
-    bio = models.TextField(null=True)
-    membership_started_at = models.DateTimeField(null=True)
+    badge_cache = models.TextField(null=True, blank=True)
+    profile_cache = models.JSONField(default=dict, null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    last_activity_at = models.DateTimeField(auto_now=True)
 
     telegram_id = models.CharField(max_length=64, db_index=True, null=True, blank=True)
 
@@ -99,7 +94,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             self.secret_hash = random_string(length=18)
 
         self.updated_at = datetime.utcnow()
-        self.last_activity_at = datetime.utcnow()
         return super().save(*args, **kwargs)
 
     def get_avatar(self):

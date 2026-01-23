@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 def log_in(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return redirect("profile")
     return render(request, "users/login.html")
 
@@ -72,6 +72,8 @@ def club_callback(request):
                        "<a href=\"https://vas3k.club\">Продлите</a> её здесь."
         })
 
+    user_badge = club.parse_badge(token)
+
     user = User.objects.filter(Q(email=userinfo["email"]) | Q(slug=userinfo["sub"])).first()
     telegram_id = club_profile["user"]["telegram"].get("id") if club_profile["user"].get("telegram") else None
     if user:
@@ -80,12 +82,8 @@ def club_callback(request):
         if not user.email or user.email != userinfo["email"]:
             user.email = userinfo["email"]
         user.telegram_id = telegram_id
-        user.country = club_profile["user"]["country"]
-        user.city = club_profile["user"]["city"]
-        user.company = club_profile["user"]["company"]
-        user.position = club_profile["user"]["position"]
-        user.bio = club_profile["user"]["bio"]
-        user.membership_started_at = club_profile["user"]["membership_started_at"]
+        user.badge_cache = user_badge
+        user.profile_cache = club_profile
         user.save()
     else:
         user = User.objects.create_user(
@@ -94,12 +92,8 @@ def club_callback(request):
             full_name=club_profile["user"]["full_name"],
             telegram_id=telegram_id,
             avatar=club_profile["user"]["avatar"],
-            country=club_profile["user"]["country"],
-            city=club_profile["user"]["city"],
-            company=club_profile["user"]["company"],
-            position=club_profile["user"]["position"],
-            bio=club_profile["user"]["bio"],
-            membership_started_at=club_profile["user"]["membership_started_at"],
+            badge_cache=user_badge,
+            profile_cache=club_profile,
         )
 
     login(request, user)

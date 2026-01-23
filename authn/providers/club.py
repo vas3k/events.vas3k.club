@@ -21,3 +21,16 @@ def parse_membership(token):
     except Exception as ex:
         log.exception(ex)
         return None
+
+
+def parse_badge(token):
+    try:
+        return requests.get(
+            url=f"{oauth.club.api_base_url}/user/me.badge.html",
+            headers={
+                "Authorization": f"{token['token_type']} {token['access_token']}"
+            }
+        ).json()
+    except Exception as ex:
+        log.exception(ex)
+        return None

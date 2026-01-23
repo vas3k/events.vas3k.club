@@ -14,7 +14,16 @@
     {% block fonts %}
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static 'css/index.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/fonts.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/events.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/tickets.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/users.css' %}?version={{ settings.RELEASE }}">
+    <link rel="stylesheet" href="{% static 'css/mobile.css' %}?version={{ settings.RELEASE }}">
+
     {% block css %}
     {% endblock %}
 

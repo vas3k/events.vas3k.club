@@ -161,6 +161,7 @@ LOGGING = {
 # App
 
 APP_TITLE = "Вастрик 🔥 Ивенты"
+APP_HOST = os.environ.get("APP_HOST") or "http://127.0.0.1:8000"
 DEFAULT_AVATAR = "https://i.vas3k.club/v.png"
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 LOGIN_URL = "/login/"

@@ -9,6 +9,7 @@ services:
       - MODE=production
       - PYTHONUNBUFFERED=1
       - DEBUG=false
+      - APP_HOST=https://events.vas3k.club
       - POSTGRES_DB=${POSTGRES_DB:-vas3k_events}
       - POSTGRES_USER=${POSTGRES_USER:-vas3k}
       - POSTGRES_HOST=host.docker.internal

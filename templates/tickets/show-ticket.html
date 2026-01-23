@@ -35,7 +35,7 @@
                         <div class="event-managers-title">Организуют 👇</div>
 
                         {% for manager in ticket.event.manager_users %}
-                            <a href="{{ user.profile_url }}" target="_blank" class="event-manager">
+                            <a href="{{ manager.profile_url }}" target="_blank" class="event-manager">
                                 <span class="avatar" style="background-image: url('{{ manager.avatar }}');"></span>
                                 <span>{{ manager.full_name }}</span>
                             </a>

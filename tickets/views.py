@@ -35,11 +35,8 @@ def stripe_webhook(request):
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         session_id = session["id"]
-        customer_email = session["customer_details"]["email"].lower()
-        user = User.objects.filter(email=customer_email).first()
-
-        # TODO: find user by metadata.slug
-
+        metadata = session["metadata"]
+        user = User.objects.filter(Q(id=metadata.get("user_id")) | Q(slug=metadata.get("user_slug"))).first()
         ticket_types_processed = set()
 
         try:
@@ -66,7 +63,7 @@ def stripe_webhook(request):
                         Ticket.objects.create(
                             user=user,
                             code=Ticket.objects.filter(event=ticket_type.event).count() + 1,
-                            customer_email=customer_email,
+                            customer_email=user.email,
                             stripe_payment_id=session.get("payment_intent"),
                             event=ticket_type.event,
                             ticket_type=ticket_type,
@@ -82,11 +79,8 @@ def stripe_webhook(request):
 
                     # Check if number of sales is exceeded
                     ticket_sales_count = Ticket.objects.filter(ticket_type=ticket_type).count()
-                    TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
-                        tickets_sold=ticket_sales_count
-                    )
                     if ticket_type.limit_quantity >= 0 and ticket_sales_count >= ticket_type.limit_quantity:
-                        # Check if ticket is soldout
+                        # Check if ticket is sold out
                         TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
                             is_sold_out=True
                         )
@@ -96,13 +90,18 @@ def stripe_webhook(request):
                             event=ticket_type.event,
                         ).filter(Q(limit_quantity__lt=0) | Q(tickets_sold__lt=F("limit_quantity")))
                         if not any_active_tickets_left:
-                            Event.objects.filter(id=ticket_type.event).update(is_sold_out=True)
+                            Event.objects.filter(id=ticket_type.event_id).update(is_sold_out=True)
+                    else:
+                        # just increase counter
+                        TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
+                            tickets_sold=ticket_sales_count
+                        )
 
             # Send confirmation emails (unique by ticket code)
             for ticket_type in ticket_types_processed:
                 try:
                     send_notifications(
-                        email_address=customer_email,
+                        email_address=user.email,
                         telegram_id=user.telegram_id if user else None,
                         message_title=ticket_type.welcome_message_title,
                         message_text=ticket_type.welcome_message_text,

@@ -29,19 +29,6 @@ def parse_stripe_webhook_event(request, webhook_secret, **kwargs):
     return event
 
 
-def deactivate_payment_link(payment_link_id):
-    try:
-        stripe.PaymentLink.modify(
-            payment_link_id,
-            active=False,
-            api_key=settings.STRIPE_API_KEY
-        )
-        log.info(f"Payment link {payment_link_id} has been deactivated due to sales limit")
-        return True
-    except stripe.error.StripeError as e:
-        log.error(f"Failed to deactivate payment link {payment_link_id}: {str(e)}")
-        return False
-
 def is_checklist_completed(ticket, user):
     if not ticket.ticket_type.checklists:
         return True

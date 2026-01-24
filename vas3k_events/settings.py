@@ -171,6 +171,8 @@ LOGIN_URL = "/login/"
 STRIPE_API_KEY = os.getenv("STRIPE_API_KEY") or ""
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY") or ""
 STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET") or ""
+STRIPE_SUCCESS_URL = f"{APP_HOST}/me/"
+STRIPE_CANCEL_URL = f"{APP_HOST}/me/"
 
 # Auth
 

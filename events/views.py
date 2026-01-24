@@ -146,7 +146,7 @@ def edit_ticket_type(request, event_id, ticket_type_id=None):
     else:
         form = TicketTypeForm(instance=ticket_type)
 
-    return render(request, "events/edit-ticket-type.html", {
+    return render(request, "events/edit/ticket-type.html", {
         "form": form,
         "event": event,
         "ticket_type": ticket_type,

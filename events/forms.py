@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, TicketType
+from events.models import Event, TicketType
 
 
 class EventForm(forms.ModelForm):
@@ -9,7 +9,7 @@ class EventForm(forms.ModelForm):
             "title", "description", "location", "location_url",
             "sale_starts_at", "sale_ends_at", "event_starts_at", "event_ends_at",
             "icon", "image", "intro", "managers", "contact_url", "waitlist_url",
-            "is_visible", "is_sold_out", "index"
+            "is_free_event", "is_visible", "is_sold_out", "index"
         ]
         widgets = {
             "sale_starts_at": forms.DateTimeInput(attrs={"type": "datetime-local"}, format="%Y-%m-%dT%H:%M"),
@@ -35,9 +35,9 @@ class TicketTypeForm(forms.ModelForm):
         model = TicketType
         fields = [
             "name", "description", "price", "currency", "url",
-            "stripe_product_id", "stripe_payment_link_id",
+            "stripe_price_id",
             "welcome_message_title", "welcome_message_text",
-            "limit_quantity", "is_visible"
+            "limit_quantity", "limit_per_user", "is_sold_out", "is_visible"
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),

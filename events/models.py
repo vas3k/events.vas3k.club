@@ -26,11 +26,10 @@ class Event(models.Model):
     contact_url = models.URLField(null=True, blank=True)
     waitlist_url = models.URLField(null=True, blank=True)
 
-    template = models.CharField(max_length=255, null=True, blank=True)  # TODO: delete
-
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    is_free_event = models.BooleanField(default=False)
     is_visible = models.BooleanField(default=True)
     is_sold_out = models.BooleanField(default=False)
     index = models.IntegerField(default=0)
@@ -78,20 +77,21 @@ class TicketType(models.Model):
     currency = models.CharField(max_length=8, default="", null=True, blank=True)
     url = models.URLField(null=True, blank=True)
 
-    stripe_product_id = models.CharField(max_length=255, null=True, blank=True)
-    stripe_payment_link_id = models.CharField(max_length=255, null=True, blank=True)
+    stripe_price_id = models.CharField(max_length=255, null=True, blank=True)
 
     welcome_message_title = models.CharField(max_length=255, null=True, blank=True)
     welcome_message_text = models.TextField(null=True, blank=True)
 
     tickets_sold = models.IntegerField(default=0)
     limit_quantity = models.IntegerField(default=-1)
+    limit_per_user = models.IntegerField(default=-1)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     checklists = models.JSONField(default=list, null=True, blank=True)
 
+    is_sold_out = models.BooleanField(default=False)
     is_visible = models.BooleanField(default=True)
 
     class Meta:
@@ -101,10 +101,10 @@ class TicketType(models.Model):
     def __str__(self):
         return self.name
 
-    def is_sold_out(self):
-        if self.limit_quantity < 0:
-            return False
-        return self.tickets_sold >= self.limit_quantity
+    # def is_sold_out(self):
+    #     if self.limit_quantity < 0:
+    #         return False
+    #     return self.tickets_sold >= self.limit_quantity
 
     def left_tickets_count(self):
         if self.limit_quantity > 0:

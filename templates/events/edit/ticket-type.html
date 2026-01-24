@@ -64,17 +64,10 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="{{ form.stripe_product_id.id_for_label }}">{{ form.stripe_product_id.label }}</label>
-                            {{ form.stripe_product_id }}
-                            {% if form.stripe_product_id.errors %}
-                                <div class="form-error">{{ form.stripe_product_id.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="form-group">
-                            <label for="{{ form.stripe_payment_link_id.id_for_label }}">{{ form.stripe_payment_link_id.label }}</label>
-                            {{ form.stripe_payment_link_id }}
-                            {% if form.stripe_payment_link_id.errors %}
-                                <div class="form-error">{{ form.stripe_payment_link_id.errors }}</div>
+                            <label for="{{ form.stripe_price_id.id_for_label }}">{{ form.stripe_price_id.label }}</label>
+                            {{ form.stripe_price_id }}
+                            {% if form.stripe_price_id.errors %}
+                                <div class="form-error">{{ form.stripe_price_id.errors }}</div>
                             {% endif %}
                         </div>
                     </div>

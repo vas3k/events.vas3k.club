@@ -1,22 +1,22 @@
 import logging
 
-import stripe
 from authlib.oauth1.rfc5849.errors import MethodNotAllowedError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q, F
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
 from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers, Event
+from tickets.stripe import stripe
 from tickets.models import Ticket, TicketChecklistAnswers
 
-from tickets.helpers import parse_stripe_webhook_event, deactivate_payment_link
+from tickets.helpers import parse_stripe_webhook_event
 from notifications.helpers import send_notifications
 from users.models import User
-from vas3k_events.exceptions import BadRequest, RateLimitException
+from vas3k_events.exceptions import BadRequest, RateLimitException, NotFound
 
 log = logging.getLogger()
 
@@ -37,6 +37,9 @@ def stripe_webhook(request):
         session_id = session["id"]
         customer_email = session["customer_details"]["email"].lower()
         user = User.objects.filter(email=customer_email).first()
+
+        # TODO: find user by metadata.slug
+
         ticket_types_processed = set()
 
         try:
@@ -49,14 +52,14 @@ def stripe_webhook(request):
             # Process each item in the purchase
             if session_with_items.line_items:
                 for item in session_with_items.line_items.data:
-                    stripe_product_id = item.price.product.id
+                    stripe_price_id = item.price.id
 
                     # Find the corresponding ticket
                     try:
-                        ticket_type = TicketType.objects.get(stripe_product_id=stripe_product_id)
+                        ticket_type = TicketType.objects.get(stripe_price_id=stripe_price_id)
                     except TicketType.DoesNotExist:
-                        log.exception(f"Ticket type for product_id {stripe_product_id} not found")
-                        raise BadRequest(f"Ticket type for product_id {stripe_product_id} not found")
+                        log.exception(f"Ticket type for price_id {stripe_price_id} not found")
+                        raise BadRequest(f"Ticket type for price_id {stripe_price_id} not found")
 
                     # Issue a ticket (one for each quantity)
                     for _ in range(item.quantity):
@@ -79,19 +82,21 @@ def stripe_webhook(request):
 
                     # Check if number of sales is exceeded
                     ticket_sales_count = Ticket.objects.filter(ticket_type=ticket_type).count()
-                    TicketType.objects.filter(stripe_product_id=stripe_product_id).update(
+                    TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
                         tickets_sold=ticket_sales_count
                     )
-                    if ticket_type.limit_quantity >= 0 and ticket_type.stripe_payment_link_id:
-                        if ticket_sales_count >= ticket_type.limit_quantity:
-                            deactivate_payment_link(ticket_type.stripe_payment_link_id)
+                    if ticket_type.limit_quantity >= 0 and ticket_sales_count >= ticket_type.limit_quantity:
+                        # Check if ticket is soldout
+                        TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
+                            is_sold_out=True
+                        )
 
-                            # Check if the whole event is sold out
-                            any_active_tickets_left = TicketType.objects.filter(
-                                event=ticket_type.event,
-                            ).filter(Q(limit_quantity__lt=0) | Q(tickets_sold__lt=F("limit_quantity")))
-                            if not any_active_tickets_left:
-                                Event.objects.filter(id=ticket_type.event).update(is_sold_out=True)
+                        # Check if the whole event is sold out
+                        any_active_tickets_left = TicketType.objects.filter(
+                            event=ticket_type.event,
+                        ).filter(Q(limit_quantity__lt=0) | Q(tickets_sold__lt=F("limit_quantity")))
+                        if not any_active_tickets_left:
+                            Event.objects.filter(id=ticket_type.event).update(is_sold_out=True)
 
             # Send confirmation emails (unique by ticket code)
             for ticket_type in ticket_types_processed:
@@ -141,6 +146,58 @@ def show_ticket(request, ticket_id):
         "ticket": ticket,
         "checklist": checklist,
     })
+
+
+@login_required
+def buy_tickets(request):
+    ticket_type_id = request.POST.get("ticket_type_id")
+
+    try:
+        ticket_type_amount = int(request.POST.get(f"ticket_type_amount_{ticket_type_id}") or 1)
+    except ValueError:
+        raise BadRequest()
+
+    ticket_type = TicketType.objects.filter(id=ticket_type_id).first()
+    if not ticket_type:
+        raise NotFound(title="Билет не найден")
+
+    if ticket_type.is_sold_out:
+        raise RateLimitException(
+            title="Билеты закончились",
+            message="К сожалению, билеты этого типа уже закончились. Попробуйте купить другие."
+        )
+
+    if ticket_type.limit_per_user > 0 and ticket_type_amount > ticket_type.limit_per_user:
+        raise BadRequest(
+            title=f"Максимум {ticket_type.limit_per_user} билетов в одни руки!",
+            message="Выберите меньшее количество билетов"
+        )
+
+    try:
+        session = stripe.checkout.Session.create(
+            mode="payment",
+            payment_method_types=["card"],
+            allow_promotion_codes=True,
+            line_items=[{
+                "price": ticket_type.stripe_price_id,
+                "quantity": ticket_type_amount,
+            }],
+            customer_email=request.user.email,
+            metadata={
+                "user_id": request.user.id,
+                "user_slug": request.user.slug
+            },
+            success_url=settings.STRIPE_SUCCESS_URL,
+            cancel_url=settings.STRIPE_CANCEL_URL,
+        )
+    except stripe.error.StripeError as e:
+        log.error(f"Stripe API error: {str(e)}")
+        return render(request, "error.html", {
+            "title": "Ошибка при покупке билетов",
+            "message": str(e),
+        })
+
+    return HttpResponseRedirect(session.url)
 
 
 @login_required

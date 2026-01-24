@@ -90,14 +90,20 @@
 }
 
 .ticket-type {
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: 30px auto auto;
+    gap: 15px;
     text-decoration: none;
-    flex-wrap: wrap;
-    justify-content: space-between;
     background: linear-gradient(135deg, #ddd6fe 0%, #ede9fe 50%, #ddd6fe 100%);
+    margin: 0;
 }
+
+    .ticket-type-checkbox {
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        outline: none;
+    }
 
     .ticket-type-soldout {
         opacity: 0.7;
@@ -124,11 +130,54 @@
         font-weight: 500;
     }
 
+    .ticket-type-selectable {
+        cursor: pointer;
+        position: relative;
+    }
+
+        .ticket-type-selectable:has(.ticket-type-checkbox:checked),
+        .ticket-type-selectable.ticket-type-selected {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -2px rgba(9,30,66,.35), 0 0 0 1px rgba(9,30,66,.18);
+        }
+
+    .ticket-type-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 20px;
+    }
+
     .ticket-type-price {
         font-size: 150%;
         text-align: right;
         max-width: 150px;
         font-weight: 700;
+    }
+
+    .ticket-type-amount {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+        .ticket-type-amount input {
+            width: 60px;
+            margin: 0;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
+            appearance: none;
+            border-radius: var(--input-border-radius);
+        }
+
+        .ticket-type-amount .button {
+            padding: 6px 9px;
+        }
+
+    .ticket-types-buy {
+        display: flex;
+        justify-content: center;
     }
 
 .countdown-timer {

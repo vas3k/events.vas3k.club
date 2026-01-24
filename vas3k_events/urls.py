@@ -8,7 +8,7 @@ from events.views import (
 )
 from landing.views import landing_page
 from notifications.views import subscribe, unsubscribe
-from tickets.views import show_ticket, update_ticket_checklist_answer, stripe_webhook
+from tickets.views import show_ticket, update_ticket_checklist_answer, stripe_webhook, buy_tickets
 from users.views import profile
 
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     path(r"auth/login/club/", login_club, name="login_club"),
     path(r"auth/club_callback/", club_callback, name="club_callback"),
 
+    path(r"stripe/checkout/", buy_tickets, name="buy_tickets"),
     path(r"stripe/webhook/", stripe_webhook, name="stripe_webhook"),
 
     path(r"ticket/<str:ticket_id>/", show_ticket, name="show_ticket"),

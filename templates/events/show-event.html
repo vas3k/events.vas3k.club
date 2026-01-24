@@ -92,7 +92,9 @@
                 {% else %}
                     <form method="post" action="{% url "buy_tickets" %}">
                         <div class="block ticket-types">
-                            <div class="block-header">🎟️ Купить билет</div>
+                            <div class="block-header">
+                                🎟️ {% if event.is_free_event %}Записаться на ивент{% else %}Купить билет{% endif %}
+                            </div>
 
                             {% if not ticket_types %}
                                 <div class="block-description">Хмм, а где все билеты-то?</div>
@@ -125,7 +127,7 @@
                                             {% if ticket_type.limit_per_user > 0 %}
                                                 <div class="ticket-type-amount">
                                                     <button type="button" class="button button-round" data-action="decrease" onclick="this.nextElementSibling.stepDown()">−</button>
-                                                    <input type="number" name="ticket_type_amount_{{ ticket_type.id }}" value="1" min="1" max="{{ ticket_type.limit_per_user }}">
+                                                    <input type="number" name="ticket_type_amount_{{ ticket_type.id }}" value="1" min="1" max="{% if ticket_type.left_tickets_count > ticket_type.limit_per_user %}{{ ticket_type.limit_per_user }}{% else %}{{ ticket_type.left_tickets_count }}{% endif %}">
                                                     <button type="button" class="button button-round" data-action="increase" onclick="this.previousElementSibling.stepUp()">+</button>
                                                 </div>
                                             {% endif %}
@@ -154,7 +156,9 @@
                             {% csrf_token %}
 
                             <div class="ticket-types-buy">
-                                <button type="submit" class="button button-big">Купить</button>
+                                <button type="submit" class="button button-big">
+                                    {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                </button>
                             </div>
                         </div>
                     </form>

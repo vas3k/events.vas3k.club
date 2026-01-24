@@ -162,13 +162,22 @@
     }
 
         .ticket-type-amount input {
-            width: 60px;
+            font-size: 110%;
+            font-weight: 600;
+            width: 40px;
             margin: 0;
+            padding: 6px;
             text-align: center;
             -webkit-appearance: none;
             -moz-appearance: textfield;
             appearance: none;
             border-radius: var(--input-border-radius);
+        }
+
+        .ticket-type-amount input::-webkit-outer-spin-button,
+        .ticket-type-amount input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .ticket-type-amount .button {

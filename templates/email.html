@@ -379,7 +379,7 @@
 
         <main>
             {% block body %}
-                {{ message | markdown }}
+                {{ message | markdown | safe }}
             {% endblock %}
         </main>
 

@@ -20,23 +20,31 @@
     {% if tickets %}
         <div class="block">
             <div class="block-header">💎 Список билетов</div>
-            <div class="tickets-list">
+            <div class="ticket-table">
                 {% for ticket in tickets %}
-                    <div class="ticket-item">
-                        <div class="ticket-item-info">
-                            <div class="ticket-item-code">{{ ticket.code }}</div>
-                            <div class="ticket-item-type">{{ ticket.ticket_type.name }}</div>
-                            {% if ticket.user %}
-                                <div class="ticket-item-user">
-                                    <span class="avatar" style="background-image: url('{{ ticket.user.avatar }}');"></span>
-                                    <span>{{ ticket.user.full_name }}</span>
-                                </div>
-                            {% elif ticket.customer_email %}
-                                <div class="ticket-item-email">{{ ticket.customer_email }}</div>
-                            {% endif %}
+                    <a href="{{ ticket.user.profile_url }}" target="_blank">
+                        <div class="block block-clickable ticket-table-row">
+                            <div class="ticket-table-cell">
+                                {% if ticket.user %}
+                                    <div class="ticket-table-user">
+                                        <span class="avatar" style="background-image: url('{{ ticket.user.avatar }}');"></span>
+                                        <span>{{ ticket.user.full_name }}</span>
+                                    </div>
+                                {% endif %}
+                                {% if ticket.customer_email %}
+                                    <div style="opacity: 0.5;">{{ ticket.customer_email }}</div>
+                                {% elif not ticket.user %}
+                                    <div style="opacity: 0.5;">—</div>
+                                {% endif %}
+                            </div>
+                            <div class="ticket-table-cell">
+                                {{ ticket.ticket_type.name }}: №{{ ticket.code }}
+                            </div>
+                            <div class="ticket-table-cell ticket-table-cell-date">
+                                {{ ticket.created_at|date:"d.m.Y H:i" }}
+                            </div>
                         </div>
-                        <div class="ticket-item-date">{{ ticket.created_at|date:"d.m.Y H:i" }}</div>
-                    </div>
+                    </a>
                 {% endfor %}
             </div>
         </div>

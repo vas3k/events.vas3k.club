@@ -466,3 +466,16 @@ img.emoji {
         margin-top: 10px;
     }
 }
+
+.label {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none !important;
+    padding: 15px 18px;
+    box-sizing: border-box;
+    border-radius: var(--input-border-radius);
+    background-color: var(--button-bg-color);
+    color: var(--button-color);
+    text-align: center;
+    font-weight: 600;
+}

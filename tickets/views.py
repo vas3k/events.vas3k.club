@@ -301,6 +301,7 @@ def accept_transfer(request, ticket_id, transfer_code):
 
     # Update ticket owner
     ticket.user = request.user
+    ticket.customer_email = request.user.email
     ticket.transfer_code = None  # Clear transfer code after use
     ticket.save()
 

@@ -17,7 +17,7 @@
             <div class="event-title">{% if ticket_type %}Редактировать{% else %}Создать{% endif %} тип билета</div>
 
             <div class="block event-edit-form">
-                <form method="POST" action="">
+                <form method="POST" action="{% if ticket_type %}{% url "edit_ticket_type" event.id ticket_type.id %}{% else %}{% url "edit_ticket_type_new" event.id %}{% endif %}">
                     {% csrf_token %}
                     
                     <div class="form-group">

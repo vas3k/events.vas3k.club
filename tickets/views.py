@@ -264,15 +264,10 @@ def generate_transfer_code(request, ticket_id):
         raise PermissionDenied("Только POST запросы")
 
     ticket = get_object_or_404(Ticket, pk=ticket_id)
-    
-    # Generate transfer code
-    transfer_code = random_string(32)
-    ticket.transfer_code = transfer_code
+    ticket.transfer_code = random_string(32)
     ticket.save()
 
-    # Build transfer URL
-    transfer_path = reverse("show_transfer", args=[str(ticket.id), transfer_code])
-    transfer_url = request.build_absolute_uri(transfer_path)
+    transfer_url = request.build_absolute_uri(reverse("show_transfer", args=[str(ticket.id), ticket.transfer_code]))
 
     return render(request, "message.html", {
         "title": "Код для передачи билета создан",
@@ -284,16 +279,12 @@ def generate_transfer_code(request, ticket_id):
 def show_transfer(request, ticket_id, transfer_code):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    # Verify transfer code
     if not ticket.transfer_code or ticket.transfer_code != transfer_code:
         raise PermissionDenied("Неверный код передачи")
 
-    # Get old user info
-    old_user = ticket.user
-
     return render(request, "tickets/transfer.html", {
         "ticket": ticket,
-        "old_user": old_user,
+        "old_user": ticket.user,
         "transfer_code": transfer_code,
     })
 
@@ -305,20 +296,18 @@ def accept_transfer(request, ticket_id, transfer_code):
 
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    # Verify transfer code
     if not ticket.transfer_code or ticket.transfer_code != transfer_code:
-        raise PermissionDenied("Неверный код передачи")
+        raise PermissionDenied("Неверный код")
 
-    # Update ticket user
+    # Update ticket owner
     ticket.user = request.user
     ticket.transfer_code = None  # Clear transfer code after use
     ticket.save()
 
-    # Update all checklist answers for this ticket
+    # Delete all checklist answers for old ticket
     TicketChecklistAnswers.objects.filter(ticket=ticket).delete()
 
-    ticket_path = reverse("show_ticket", args=[str(ticket.id)])
-    ticket_url = request.build_absolute_uri(ticket_path)
+    ticket_url = request.build_absolute_uri(reverse("show_ticket", args=[str(ticket.id)]))
     
     return render(request, "message.html", {
         "title": "Билет успешно передан",

@@ -99,8 +99,8 @@ if bool(os.getenv("POSTGRES_USE_POOLING")):
     DATABASES["default"]["OPTIONS"] = {
         "pool": {
             "min_size": 3,
-            "max_size": 15,
-            "timeout": 15, # fail in 15 sec under load
+            "max_size": 10,
+            "timeout": 10, # fail in 10 sec under load
             "max_idle": 300, # close idle after 5 min
         }
     }

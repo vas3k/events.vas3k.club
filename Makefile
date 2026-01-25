@@ -10,11 +10,11 @@ docker-run-production:
 	python manage.py migrate --noinput
 	gunicorn vas3k_events.wsgi:application \
 		--bind 0.0.0.0:8815 \
-		--workers 4 \
+		--workers 3 \
 		--worker-class sync \
 		--worker-connections 1000 \
 		--max-requests 1000 \
-		--max-requests-jitter 50 \
+		--max-requests-jitter 100 \
 		--timeout 30 \
 		--keep-alive 2 \
 		--access-logfile - \

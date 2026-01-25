@@ -88,3 +88,7 @@
     opacity: 0.5;
     font-size: 90%;
 }
+
+.error {
+    max-width: 600px;
+}

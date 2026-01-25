@@ -90,6 +90,7 @@ class TicketType(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     checklists = models.JSONField(default=list, null=True, blank=True)
+    special_code = models.CharField(max_length=32, null=True, blank=True)
 
     is_sold_out = models.BooleanField(default=False)
     is_visible = models.BooleanField(default=True)
@@ -100,11 +101,6 @@ class TicketType(models.Model):
 
     def __str__(self):
         return self.name
-
-    # def is_sold_out(self):
-    #     if self.limit_quantity < 0:
-    #         return False
-    #     return self.tickets_sold >= self.limit_quantity
 
     def left_tickets_count(self):
         if self.limit_quantity > 0:

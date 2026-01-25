@@ -8,6 +8,22 @@
 {% block content %}
 <div class="content">
     <div class="block profile">
+        <div class="animate-on-load">
+            <div class="block-header profile-header">🎟️ Мои билетики</div>
+
+            {% if not tickets %}
+                <div class="block-description block-description-center">У вас пока нет билетиков. Но когда они появятся, вы всегда сможете их найти тут, если что!</div>
+
+                <div class="block-description block-description-center">
+                    <a href="{% url "index" %}>К ивентам</a>
+                </div>
+            {% endif %}
+
+            {% for ticket in tickets %}
+                {% include "tickets/ticket-item.html" with ticket=ticket %}
+            {% endfor %}
+        </div>
+
         <div class="block-header profile-header">Я — {{ request.user.full_name }}</div>
 
         <div class="block-description block-description-center">
@@ -27,18 +43,6 @@
         <div class="block-description profile-buttons">
             <a href="https://vas3k.club/user/me/edit/profile/" class="button">✏️ Редактировать профиль</a>
             <a href="{% url "login_club" %}" class="button">🔄 Синхронизировать данные</a>
-        </div>
-
-        <div class="animate-on-load">
-            <div class="block-header profile-header">🎟️ Мои билетики</div>
-
-            {% if not tickets %}
-                <div class="block-description block-description-center">У вас пока нет билетиков. Но когда они появятся, вы всегда сможете их найти тут, если что!</div>
-            {% endif %}
-
-            {% for ticket in tickets %}
-                {% include "tickets/ticket-item.html" with ticket=ticket %}
-            {% endfor %}
         </div>
     </div>
 

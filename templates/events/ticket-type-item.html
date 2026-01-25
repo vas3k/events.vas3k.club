@@ -1,0 +1,50 @@
+{% if not ticket_type.is_sold_out %}
+    <label class="block ticket-type ticket-type-selectable" data-ticket-url="{{ ticket_type.url }}">
+        <input type="radio" name="ticket_type_id" value="{{ ticket_type.id }}" class="ticket-type-checkbox">
+
+        <div class="ticket-type-info">
+            <div class="ticket-type-name">{{ ticket_type.name }}</div>
+            {% if ticket_type.description %}
+                <div class="ticket-type-description">{{ ticket_type.description }}</div>
+            {% endif %}
+            {% if ticket_type.limit_quantity and ticket_type.limit_quantity > 0 %}
+                <div class="ticket-type-leftovers">
+                    Осталось {{ ticket_type.left_tickets_count }} из {{ ticket_type.limit_quantity }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="ticket-type-right">
+            {% if ticket_type.price and ticket_type.price > 0 %}
+                <div class="ticket-type-price">
+                    {{ ticket_type.price | floatformat }}{% if ticket_type.currency %} {{ ticket_type.currency }}{% endif %}
+                </div>
+            {% endif %}
+
+            {% if ticket_type.limit_per_user > 0 %}
+                <div class="ticket-type-amount">
+                    <button type="button" class="button button-round" data-action="decrease" onclick="this.nextElementSibling.stepDown(); this.closest('label').querySelector('input[type=radio]').checked = true;">−</button>
+                    <input type="number" name="ticket_type_amount_{{ ticket_type.id }}" value="1" min="1" max="{% if ticket_type.left_tickets_count > ticket_type.limit_per_user %}{{ ticket_type.limit_per_user }}{% else %}{{ ticket_type.left_tickets_count }}{% endif %}">
+                    <button type="button" class="button button-round" data-action="increase" onclick="this.previousElementSibling.stepUp(); this.closest('label').querySelector('input[type=radio]').checked = true;">+</button>
+                </div>
+            {% endif %}
+        </div>
+    </label>
+{% else %}
+    <div class="block ticket-type ticket-type-soldout">
+        <div class="ticket-type-info">
+            <div class="ticket-type-name">{{ ticket_type.name }}</div>
+            {% if ticket_type.description %}
+                <div class="ticket-type-description">{{ ticket_type.description }}</div>
+            {% endif %}
+            {% if ticket_type.limit_quantity and ticket_type.limit_quantity > 0 %}
+                <div class="ticket-type-leftovers">
+                    ❌ Эти билеты закончились
+                </div>
+            {% endif %}
+        </div>
+        <div class="ticket-type-price">
+            😱 SOLD OUT
+        </div>
+    </div>
+{% endif %}

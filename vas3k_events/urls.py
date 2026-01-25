@@ -39,5 +39,6 @@ urlpatterns = [
     path(r"<slug:event_id>/edit/tickets-sold/", edit_event_tickets_sold, name="edit_event_tickets_sold"),
     path(r"<slug:event_id>/edit/notifications/", edit_event_notifications, name="edit_event_notifications"),
     path(r"<slug:event_id>/edit/notifications/<uuid:subscription_id>/delete/", delete_notification, name="delete_notification"),
+    path(r"<slug:event_id>/special/<slug:special_code>/", show_event, name="show_event_with_special"),
     path(r"<slug:event_id>/", show_event, name="show_event"),
 ]

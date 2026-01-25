@@ -158,11 +158,14 @@ def buy_tickets(request):
 
     ticket_type = TicketType.objects.filter(id=ticket_type_id).first()
     if not ticket_type:
-        raise NotFound(title="Билет не найден")
+        raise NotFound(
+            title="Билет не выбран",
+            message="Выберите хоть один билет для покупки"
+        )
 
     if ticket_type.is_sold_out:
         raise RateLimitException(
-            title="Билеты закончились",
+            title="Эти билеты закончились",
             message="К сожалению, билеты этого типа уже закончились. Попробуйте купить другие."
         )
 

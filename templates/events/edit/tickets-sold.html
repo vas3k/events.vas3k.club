@@ -19,7 +19,7 @@
 
     {% if tickets %}
         <div class="block">
-            <div class="block-header">💎 Список билетов</div>
+            <div class="block-header">💎 Список участников</div>
             <div class="ticket-table">
                 {% for ticket in tickets %}
                     <a href="{{ ticket.user.profile_url }}" target="_blank">

@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 
 from events.models import Event
 from notifications.models import EventSubscription
@@ -21,7 +21,10 @@ def subscribe(request, event_id, topic):
             )
         )
 
-    return redirect("show_event", event.id)
+    return render(request, "message.html", {
+        "title": "Ок!",
+        "message": f"Мы пинганём вас на «{request.user.email}»"
+    })
 
 
 @login_required
@@ -35,4 +38,7 @@ def unsubscribe(request, event_id, topic):
             user=request.user,
         ).delete()
 
-    return redirect("show_event", event.id)
+    return render(request, "message.html", {
+        "title": "Ладно :(",
+        "message": f"Мы не будем вас уведомлять!"
+    })

@@ -9,9 +9,15 @@ from notifications.models import EventSubscription
 from tickets.models import Ticket
 
 
-def show_event(request, event_id):
+def show_event(request, event_id, special_code=None):
     event = get_object_or_404(Event, id=event_id)
-    ticket_types = TicketType.objects.filter(event=event)
+    visible_ticket_types = TicketType.objects.filter(event=event, is_visible=True).all()
+
+    special_ticket_types = []
+    if special_code:
+        special_ticket_types = [t for t in visible_ticket_types if t.special_code == special_code]
+
+    ticket_types = [t for t in visible_ticket_types if not t.special_code]
 
     my_tickets = []
     participants = []
@@ -21,10 +27,11 @@ def show_event(request, event_id):
         participants = {t.user for t in tickets}
         if request.user in participants:
             my_tickets = [t for t in tickets if t.user == request.user]
-        my_notifications = EventSubscription.objects.filter(event=event, user=request.user)
+        my_notifications = EventSubscription.objects.filter(event=event, user=request.user).all()
 
     return render(request, "events/show-event.html", {
         "event": event,
+        "special_ticket_types": special_ticket_types,
         "ticket_types": ticket_types,
         "participants": participants,
         "my_tickets": my_tickets,

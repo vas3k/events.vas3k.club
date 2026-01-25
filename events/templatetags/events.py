@@ -39,6 +39,20 @@ def pretty_date_range(context, date_from, date_to):
         return f"{from_day:02d} {from_month} – {to_day:02d} {to_month} {to_year}"
 
 
+@register.simple_tag(takes_context=True)
+def int_sub(context, first, second):
+    if not first and not second:
+        return 0
+
+    if not second:
+        return first
+
+    if not first:
+        return -second
+
+    return first - second
+
+
 @register.filter
 def dict_get(value, key):
     return value.get(key)

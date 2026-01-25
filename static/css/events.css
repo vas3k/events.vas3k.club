@@ -388,10 +388,9 @@
     .ticket-table-row {
         display: flex;
         align-items: center;
-        gap: 20px;
-        padding: 15px 20px;
-        background-color: var(--block-bg-color);
-        transition: background-color 0.2s ease;
+        gap: 15px;
+        padding: 13px 15px;
+        margin-bottom: 0;
     }
 
     .ticket-table-cell {

@@ -52,10 +52,9 @@ def stripe_webhook(request):
                     stripe_price_id = item.price.id
 
                     # Find the corresponding ticket
-                    try:
-                        ticket_type = TicketType.objects.get(stripe_price_id=stripe_price_id)
-                    except TicketType.DoesNotExist:
-                        log.exception(f"Ticket type for price_id {stripe_price_id} not found")
+                    ticket_type = TicketType.objects.filter(stripe_price_id=stripe_price_id).first()
+                    if not ticket_type:
+                        log.error(f"Ticket type for price_id {stripe_price_id} not found")
                         raise BadRequest(f"Ticket type for price_id {stripe_price_id} not found")
 
                     # Issue a ticket (one for each quantity)
@@ -82,6 +81,7 @@ def stripe_webhook(request):
                     if ticket_type.limit_quantity >= 0 and ticket_sales_count >= ticket_type.limit_quantity:
                         # Check if ticket is sold out
                         TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
+                            tickets_sold=ticket_sales_count,
                             is_sold_out=True
                         )
 

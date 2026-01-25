@@ -81,17 +81,26 @@
                             🎟️ Специальные билетики
                         </div>
 
-                        {% for ticket_type in special_ticket_types %}
-                            {% include "events/ticket-type-item.html" %}
-                        {% endfor %}
+                        {% if request.user.is_authenticated %}
+                            {% for ticket_type in special_ticket_types %}
+                                {% include "events/ticket-type-item.html" %}
+                            {% endfor %}
 
-                        {% csrf_token %}
+                            {% csrf_token %}
 
-                        <div class="ticket-types-buy">
-                            <button type="submit" class="button button-big">
-                                {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
-                            </button>
-                        </div>
+                            <div class="ticket-types-buy">
+                                <button type="submit" class="button button-big">
+                                    {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                </button>
+                            </div>
+                        {% else %}
+                            <div class="block-description block-description-center">
+                                ✨ Тут для вас кое-что есть, но сначала нужно войти в аккаунт! ✨
+                            </div>
+                            <div class="block-description block-description-center">
+                                <a href="{% url "login_club" %}" class="button button-blue">✖︎ Войти через Вастрик Клуб</a>
+                            </div>
+                        {% endif %}
                     </div>
                 </form>
             {% endif %}
@@ -160,7 +169,7 @@
                         </div>
                     </div>
 
-                    {% if not request.user.is_authenticated %}
+                    {% if not request.user.is_authenticated and not special_ticket_types %}
                         <div class="block-description block-description-center">
                             <a href="{% url "login_club" %}" class="button">Войдите в аккаунт, чтобы быть готовым</a>
                         </div>

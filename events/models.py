@@ -77,7 +77,7 @@ class TicketType(models.Model):
     currency = models.CharField(max_length=8, default="", null=True, blank=True)
     url = models.URLField(null=True, blank=True)
 
-    stripe_price_id = models.CharField(max_length=255, null=True, blank=True)
+    stripe_price_id = models.CharField(max_length=255, null=True, blank=True)  # FIXME: make uniq?
 
     welcome_message_title = models.CharField(max_length=255, null=True, blank=True)
     welcome_message_text = models.TextField(null=True, blank=True)

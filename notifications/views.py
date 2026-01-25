@@ -3,27 +3,33 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from events.models import Event
 from notifications.models import EventSubscription
+from vas3k_events.exceptions import BadRequest
 
 
-@login_required
 def subscribe(request, event_id, topic):
     event = get_object_or_404(Event, id=event_id)
 
     if request.method == "POST":
-        email = request.POST.get("email") or request.user.email
+        email = request.POST.get("email")
+
+        if not email and request.user.is_authenticated:
+            email = request.user.email
+
+        if not email:
+            raise BadRequest(title="Укажите почту", message="А то куда писать-то?")
 
         EventSubscription.objects.get_or_create(
             event=event,
             email=email,
             topic=topic,
             defaults=dict(
-                user=request.user,
+                user=request.user if request.user.is_authenticated else None,
             )
         )
 
     return render(request, "message.html", {
         "title": "Ок!",
-        "message": f"Мы пинганём вас на «{request.user.email}»"
+        "message": f"Мы пинганём вас на «{email}»"
     })
 
 

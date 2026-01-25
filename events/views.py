@@ -4,9 +4,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 
 from events.forms import EventForm, TicketTypeForm
-from events.models import Event, TicketType
+from events.models import Event, TicketType, TicketTypeChecklist
 from notifications.models import EventSubscription
-from tickets.models import Ticket
+from tickets.models import Ticket, TicketChecklistAnswers
 
 
 def show_event(request, event_id, special_code=None):
@@ -113,6 +113,40 @@ def edit_event_tickets_sold(request, event_id):
         "section": "tickets-sold",
         "tickets": tickets,
         "ticket_stats": ticket_stats,
+    })
+
+
+@login_required
+def edit_event_checklists(request, event_id):
+    if not request.user.is_admin:
+        raise PermissionDenied("Вы не админ")
+
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Get all global checklists
+    all_checklists = TicketTypeChecklist.objects.all().order_by("created_at")
+    
+    # Get all checklist answers for this event
+    answers = TicketChecklistAnswers.objects.filter(
+        ticket__event=event
+    ).select_related("user", "ticket", "checklist").order_by("checklist__name", "created_at")
+    
+    # Group answers by checklist
+    answers_by_checklist = {}
+    for answer in answers:
+        checklist_id = answer.checklist.id
+        if checklist_id not in answers_by_checklist:
+            answers_by_checklist[checklist_id] = {
+                "checklist": answer.checklist,
+                "answers": []
+            }
+        answers_by_checklist[checklist_id]["answers"].append(answer)
+    
+    return render(request, "events/edit/checklists.html", {
+        "event": event,
+        "section": "checklists",
+        "all_checklists": all_checklists,
+        "answers_by_checklist": answers_by_checklist,
     })
 
 

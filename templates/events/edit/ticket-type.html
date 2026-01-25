@@ -97,6 +97,27 @@
                             {% endif %}
                             <div class="form-help">-1 для неограниченного количества</div>
                         </div>
+                        <div class="form-group">
+                            <label for="{{ form.special_code.id_for_label }}">{{ form.special_code.label }}</label>
+                            {{ form.special_code }}
+                            {% if form.special_code.errors %}
+                                <div class="form-error">{{ form.special_code.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.limit_per_user.id_for_label }}">{{ form.limit_per_user.label }}</label>
+                            {{ form.limit_per_user }}
+                            {% if form.limit_per_user.errors %}
+                                <div class="form-error">{{ form.limit_per_user.errors }}</div>
+                            {% endif %}
+                            <div class="form-help">-1 для неограниченного количества</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
                         <div class="form-group form-group-checkbox">
                             <label>
                                 {{ form.is_visible }}
@@ -104,6 +125,15 @@
                             </label>
                             {% if form.is_visible.errors %}
                                 <div class="form-error">{{ form.is_visible.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="form-group form-group-checkbox">
+                            <label>
+                                {{ form.is_sold_out }}
+                                {{ form.is_sold_out.label }}
+                            </label>
+                            {% if form.is_sold_out.errors %}
+                                <div class="form-error">{{ form.is_sold_out.errors }}</div>
                             {% endif %}
                         </div>
                     </div>

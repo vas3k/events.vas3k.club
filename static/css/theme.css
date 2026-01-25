@@ -121,11 +121,17 @@ input[type=file],
 input[type=email],
 input[type=time],
 input[type=url],
+input[type=datetime-local],
+input[type=date],
+input[type=password],
+input[type=search],
 textarea,
 select,
 .CodeMirror,
 .input-select {
+    width: 100%;
     -webkit-appearance: none;
+    appearance: none;
     border: none;
     box-shadow: 0 4px 8px -2px rgba(9, 30, 66, .25), 0 0 0 1px rgba(9, 30, 66, .08);
     outline: none;
@@ -133,9 +139,15 @@ select,
     resize: vertical;
     box-sizing: border-box;
     line-height: 1.4em;
+    font-family: var(--sans-font);
     background: var(--input-bg-color);
     border-color: var(--input-border-color);
     color: var(--input-color);
+    border-radius: var(--input-border-radius);
+}
+
+select {
+    cursor: pointer;
 }
 
 input:focus,

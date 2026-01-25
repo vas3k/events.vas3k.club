@@ -3,12 +3,13 @@ from django.urls import path
 from authn.views import log_out, login_club, club_callback, log_in
 from events.views import (
     show_event, edit_event, create_event, edit_ticket_type,
-    edit_event_ticket_types, edit_event_tickets_sold, edit_event_notifications,
-    delete_ticket_type, delete_notification
+    edit_event_ticket_types, edit_event_tickets_sold, edit_event_checklists,
+    edit_event_notifications, delete_ticket_type, delete_notification
 )
 from landing.views import landing_page
 from notifications.views import subscribe, unsubscribe
 from tickets.views import show_ticket, update_ticket_checklist_answer, stripe_webhook, buy_tickets
+from tickets.csv import export_tickets_csv, export_checklists_csv
 from users.views import profile
 
 urlpatterns = [
@@ -37,6 +38,9 @@ urlpatterns = [
     path(r"<slug:event_id>/edit/ticket-types/<uuid:ticket_type_id>/", edit_ticket_type, name="edit_ticket_type"),
     path(r"<slug:event_id>/edit/ticket-types/<uuid:ticket_type_id>/delete/", delete_ticket_type, name="delete_ticket_type"),
     path(r"<slug:event_id>/edit/tickets-sold/", edit_event_tickets_sold, name="edit_event_tickets_sold"),
+    path(r"<slug:event_id>/edit/tickets-sold/export/", export_tickets_csv, name="export_tickets_csv"),
+    path(r"<slug:event_id>/edit/checklists/", edit_event_checklists, name="edit_event_checklists"),
+    path(r"<slug:event_id>/edit/checklists/export/", export_checklists_csv, name="export_checklists_csv"),
     path(r"<slug:event_id>/edit/notifications/", edit_event_notifications, name="edit_event_notifications"),
     path(r"<slug:event_id>/edit/notifications/<uuid:subscription_id>/delete/", delete_notification, name="delete_notification"),
     path(r"<slug:event_id>/special/<slug:special_code>/", show_event, name="show_event_with_special"),

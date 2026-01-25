@@ -4,46 +4,49 @@
     <div class="event-title">Типы билетов</div>
 
     <div class="block">
-        <div class="block-header">🎟️ Управление типами билетов</div>
-        <div class="block-description block-description-center">
-            <a href="{% url "edit_ticket_type_new" event.id %}" class="button button-blue">+ Добавить тип билета</a>
+        <div class="block-header block-header-with-button">
+            <span>🎟️ Управление типами билетов</span>
+            <div>
+                <a href="{% url "edit_ticket_type_new" event.id %}" class="button button-blue button-small">+ Новый</a>
+            </div>
         </div>
-    </div>
 
-    {% if ticket_types %}
-        {% for ticket_type in ticket_types %}
-            <div class="block ticket-type-edit">
-                <div class="ticket-type-edit-header">
-                    <div class="ticket-type-edit-info">
-                        <div class="ticket-type-name">{{ ticket_type.name }}</div>
-                        {% if ticket_type.description %}
-                            <div class="ticket-type-description">{{ ticket_type.description }}</div>
-                        {% endif %}
-                        <div class="ticket-type-stats">
-                            {% if ticket_type.price and ticket_type.price > 0 %}
-                                <span class="ticket-type-price">{{ ticket_type.price|floatformat }}{% if ticket_type.currency %} {{ ticket_type.currency }}{% endif %}</span>
-                            {% else %}
-                                <span class="ticket-type-price">Бесплатно</span>
+        {% if ticket_types %}
+            <div class="list">
+                {% for ticket_type in ticket_types %}
+                    <div class="list-row list-row-hover">
+                        <div class="list-cell">
+                            <div class="ticket-type-name">{{ ticket_type.name }}</div>
+                            {% if ticket_type.description %}
+                                <div class="ticket-type-description">{{ ticket_type.description }}</div>
                             {% endif %}
-                            {% if ticket_type.limit_quantity > 0 %}
-                                <span class="ticket-type-limit">Лимит: {{ ticket_type.limit_quantity }}</span>
-                            {% endif %}
-                            <span class="ticket-type-sold">Продано: {{ ticket_type.tickets_sold }}</span>
+                        </div>
+                        <div class="list-cell">
+                            <div class="ticket-type-limits">
+                                {% if ticket_type.price and ticket_type.price > 0 %}
+                                    <span class="ticket-type-price-display">{{ ticket_type.price|floatformat }}{% if ticket_type.currency %} {{ ticket_type.currency }}{% endif %}</span>
+                                {% endif %}
+                                {% if ticket_type.limit_quantity > 0 %}
+                                    <div>Лимит: <strong>{{ ticket_type.limit_quantity }}</strong></div>
+                                {% endif %}
+                                {% if ticket_type.limit_per_user > 0 %}
+                                    <div>На руки: <strong>{{ ticket_type.limit_per_user }}</strong></div>
+                                {% endif %}
+                                <div>Продано: <strong>{{ ticket_type.tickets_sold }}</strong></div>
+                            </div>
+                        </div>
+                        <div class="list-cell-actions">
+                            <a href="{% url "edit_ticket_type" event.id ticket_type.id %}" class="button button-small">✏️ Редактировать</a>
+                            <form method="POST" action="{% url "delete_ticket_type" event.id ticket_type.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-small button-red" onclick="return confirm('Вы уверены, что хотите удалить тип билета «{{ ticket_type.name }}»?{% if ticket_type.tickets_sold > 0 %}\n\nВнимание: уже продано {{ ticket_type.tickets_sold }} билетов этого типа!{% endif %}')">🗑️ Удалить</button>
+                            </form>
                         </div>
                     </div>
-                    <div class="ticket-type-edit-actions">
-                        <a href="{% url "edit_ticket_type" event.id ticket_type.id %}" class="button">✏️ Редактировать</a>
-                        <form method="POST" action="{% url "delete_ticket_type" event.id ticket_type.id %}" style="display: inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="button button-red" onclick="return confirm('Вы уверены, что хотите удалить тип билета «{{ ticket_type.name }}»?{% if ticket_type.tickets_sold > 0 %}\n\nВнимание: уже продано {{ ticket_type.tickets_sold }} билетов этого типа!{% endif %}')">🗑️ Удалить</button>
-                        </form>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="block">
+        {% else %}
             <div class="block-description">Пока нет типов билетов. Создайте первый!</div>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 {% endblock %}

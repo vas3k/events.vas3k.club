@@ -1,16 +1,20 @@
 {% extends "events/edit/layout.html" %}
 
 {% block edit_content %}
-    <div class="event-title">Проданные билеты</div>
+    <div class="event-title">Участники</div>
 
     {% if ticket_stats %}
         <div class="block">
             <div class="block-header">📊 Статистика по типам</div>
-            <div class="ticket-stats-list">
+            <div class="list">
                 {% for stat in ticket_stats %}
-                    <div class="ticket-stat-item">
-                        <span class="ticket-stat-name">{{ stat.ticket_type__name|default:"Без типа" }}</span>
-                        <span class="ticket-stat-count">{{ stat.count }} шт.</span>
+                    <div class="list-row list-row-hover">
+                        <div class="list-cell">
+                            <span>{{ stat.ticket_type__name|default:"Без типа" }}</span>
+                        </div>
+                        <div class="list-cell" style="text-align: right;">
+                            <span>{{ stat.count }} шт.</span>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -19,14 +23,19 @@
 
     {% if tickets %}
         <div class="block">
-            <div class="block-header">💎 Список участников</div>
-            <div class="ticket-table">
+            <div class="block-header block-header-with-button">
+                <span>💎 Список участников</span>
+                <div>
+                    <a href="{% url "export_tickets_csv" event.id %}" class="button button-blue button-small">📥 Экспорт в CSV</a>
+                </div>
+            </div>
+            <div class="list">
                 {% for ticket in tickets %}
-                    <a href="{{ ticket.user.profile_url }}" target="_blank">
-                        <div class="block block-clickable ticket-table-row">
-                            <div class="ticket-table-cell">
+                    <a href="{{ ticket.user.profile_url }}" target="_blank" style="text-decoration: none; color: inherit;">
+                        <div class="list-row list-row-hover">
+                            <div class="list-cell">
                                 {% if ticket.user %}
-                                    <div class="ticket-table-user">
+                                    <div class="list-user">
                                         <span class="avatar" style="background-image: url('{{ ticket.user.avatar }}');"></span>
                                         <span>{{ ticket.user.full_name }}</span>
                                     </div>
@@ -37,11 +46,14 @@
                                     <div style="opacity: 0.5;">—</div>
                                 {% endif %}
                             </div>
-                            <div class="ticket-table-cell">
+                            <div class="list-cell">
                                 {{ ticket.ticket_type.name }}: №{{ ticket.code }}
                             </div>
-                            <div class="ticket-table-cell ticket-table-cell-date">
+                            <div class="list-cell list-cell-date">
                                 {{ ticket.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                            <div class="list-cell-actions">
+                                <!-- Actions will be added later -->
                             </div>
                         </div>
                     </a>

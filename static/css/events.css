@@ -263,7 +263,6 @@
     height: 40px;
 }
 
-/* Edit Event Styles */
 .event-edit-menu {
     display: flex;
     flex-direction: column;
@@ -294,210 +293,29 @@
     font-weight: 600;
 }
 
-/* Event-specific form wrapper */
 .event-edit-form {
     margin-top: 48px;
 }
 
-/* Ticket Type Edit Styles */
-.ticket-type-edit {
-    margin-top: 20px;
+.ticket-type-price-display {
+    font-size: 130%;
+    font-weight: 700;
 }
 
-.ticket-type-edit-header {
+.ticket-type-price-free {
+    font-size: 130%;
+    font-weight: 700;
+    opacity: 0.7;
+}
+
+.ticket-type-limits {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.ticket-type-edit-info {
-    flex: 1;
-    min-width: 200px;
-}
-
-.ticket-type-edit-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-@media only screen and (max-width : 600px) {
-    .ticket-type-edit-header {
-        flex-direction: column;
-    }
-
-    .ticket-type-edit-actions {
-        width: 100%;
-    }
-
-    .ticket-type-edit-actions .button {
-        flex: 1;
-    }
-}
-
-.ticket-type-stats {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    margin-top: 10px;
+    flex-direction: column;
+    gap: 5px;
     font-size: 90%;
     opacity: 0.8;
 }
 
-.ticket-type-stats span {
-    padding: 4px 8px;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
-}
-
-/* Tickets List Styles */
-.ticket-stats-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.ticket-stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 15px;
-    background-color: rgba(0, 0, 0, 0.03);
-    border-radius: var(--button-border-radius);
-}
-
-.ticket-stat-name {
-    font-weight: 500;
-}
-
-.ticket-stat-count {
-    font-weight: 600;
-    color: var(--text-color);
-}
-
-.ticket-table {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-top: 20px;
-}
-
-    .ticket-table-row {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 13px 15px;
-        margin-bottom: 0;
-    }
-
-    .ticket-table-cell {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-    }
-
-    .ticket-table-cell-date {
-        text-align: right;
-        opacity: 0.7;
-        font-size: 95%;
-        white-space: nowrap;
-    }
-
-    .ticket-table-user {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 500;
-    }
-
-    .ticket-table-user .avatar {
-        width: 32px;
-        height: 32px;
-    }
-
-/* Subscriptions List Styles */
-.subscriptions-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 20px;
-}
-
-.subscription-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: rgba(0, 0, 0, 0.03);
-    border-radius: var(--button-border-radius);
-    transition: all 0.2s ease;
-}
-
-.subscription-item:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    transform: translateX(4px);
-}
-
-.subscription-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-}
-
-.subscription-user {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.subscription-user .avatar {
-    width: 32px;
-    height: 32px;
-}
-
-.subscription-email {
-    font-weight: 500;
-}
-
-.subscription-topic {
-    opacity: 0.7;
-    font-size: 90%;
-    padding: 2px 8px;
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 5px;
-    display: inline-block;
-    width: fit-content;
-}
-
-.subscription-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-}
-
-.subscription-date {
-    opacity: 0.6;
-    font-size: 90%;
-    white-space: nowrap;
-}
-
-@media only screen and (max-width : 600px) {
-    .subscription-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .subscription-actions {
-        width: 100%;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 8px;
-    }
+.ticket-type-limit-empty {
+    opacity: 0.5;
 }

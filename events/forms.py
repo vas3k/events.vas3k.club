@@ -37,7 +37,7 @@ class TicketTypeForm(forms.ModelForm):
             "name", "description", "price", "currency", "url",
             "stripe_price_id",
             "welcome_message_title", "welcome_message_text",
-            "limit_quantity", "limit_per_user", "is_sold_out", "is_visible"
+            "limit_quantity", "special_code", "limit_per_user", "is_sold_out", "is_visible"
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),

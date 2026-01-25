@@ -1,0 +1,82 @@
+{% extends "events/edit/layout.html" %}
+
+{% block edit_content %}
+    <div class="event-title">Чеклисты</div>
+
+    <div class="block">
+        {% if all_checklists %}
+            <div class="list">
+                {% for checklist in all_checklists %}
+                    <div class="list-row">
+                        <div class="list-cell">
+                            <span style="font-weight: 500;">{{ checklist.name }}</span>
+                            <span style="opacity: 0.7; font-size: 90%;">{{ checklist.type }}</span>
+                            {% if checklist.is_required %}
+                                <span style="opacity: 0.7; font-size: 90%;">(обязательный)</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="block-description">Пока нет созданных чеклистов.</div>
+        {% endif %}
+    </div>
+
+    {% if answers_by_checklist %}
+        <div class="block">
+            <div class="block-header block-header-with-button">
+                <span>📋 Ответы участников</span>
+                <div>
+                    <a href="{% url "export_checklists_csv" event.id %}" class="button button-blue button-small">📥 Экспорт в CSV</a>
+                </div>
+            </div>
+            {% for checklist_id, data in answers_by_checklist.items %}
+                <div style="margin-top: 30px;">
+                    <div class="block-subheader">{{ data.checklist.name }}</div>
+                    <div class="list">
+                        {% for answer in data.answers %}
+                            <div class="list-row">
+                                <div class="list-cell">
+                                    {% if answer.user %}
+                                        <div class="list-user">
+                                            <span class="avatar" style="background-image: url('{{ answer.user.avatar }}');"></span>
+                                            <span>{{ answer.user.full_name }}</span>
+                                        </div>
+                                    {% else %}
+                                        <div style="opacity: 0.5;">—</div>
+                                    {% endif %}
+                                </div>
+                                <div class="list-cell">
+                                    {% if answer.answer %}
+                                        {% if data.checklist.type == "select" %}
+                                            {{ answer.answer }}
+                                        {% elif data.checklist.type == "text" %}
+                                            {{ answer.answer }}
+                                        {% elif data.checklist.type == "link" %}
+                                            <a href="{{ answer.answer }}" target="_blank">{{ answer.answer }}</a>
+                                        {% else %}
+                                            {{ answer.answer }}
+                                        {% endif %}
+                                    {% else %}
+                                        <span style="opacity: 0.5;">—</span>
+                                    {% endif %}
+                                </div>
+                                <div class="list-cell">
+                                    {{ answer.ticket.ticket_type.name }}: №{{ answer.ticket.code }}
+                                </div>
+                                <div class="list-cell list-cell-date">
+                                    {{ answer.created_at|date:"d.m.Y H:i" }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="block">
+            <div class="block-description">Пока нет ответов на чеклисты.</div>
+        </div>
+    {% endif %}
+{% endblock %}

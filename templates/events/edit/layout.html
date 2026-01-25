@@ -22,7 +22,10 @@
                     🎟️ Типы билетов
                 </a>
                 <a href="{% url "edit_event_tickets_sold" event.id %}" class="event-edit-menu-item {% if section == "tickets-sold" %}active{% endif %}">
-                    💰 Проданные билеты
+                    👤 Участники
+                </a>
+                <a href="{% url "edit_event_checklists" event.id %}" class="event-edit-menu-item {% if section == "checklists" %}active{% endif %}">
+                    ☑️ Чеклисты
                 </a>
                 <a href="{% url "edit_event_notifications" event.id %}" class="event-edit-menu-item {% if section == "notifications" %}active{% endif %}">
                     🔔 Уведомления

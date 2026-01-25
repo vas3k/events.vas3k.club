@@ -69,6 +69,10 @@
     letter-spacing: -0.02em;
 }
 
+    .event-title-sidebar {
+        font-size: 150%;
+    }
+
 .event-info {
     display: flex;
     flex-direction: column;

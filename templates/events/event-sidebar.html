@@ -1,0 +1,61 @@
+{% load events %}
+
+<a href="{% url "show_event" event.id %}">
+    <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
+</a>
+
+{% if not hide_info %}
+    <div class="event-title event-title-sidebar">{{ event.title }}</div>
+{% endif %}
+
+{% if event.description %}
+    <div class="event-description">{{ event.description }}</div>
+{% endif %}
+
+{% if not hide_info %}
+    {% if event.location %}
+        <div class="event-location">
+            📍 {% if event.location_url %}
+                <a href="{{ event.location_url }}">{{ event.location }}</a>
+            {% else %}
+                {{ event.location }}
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if event.event_starts_at %}
+        <div class="event-date">📅 {% pretty_date_range event.event_starts_at event.event_ends_at %}</div>
+    {% endif %}
+{% endif %}
+
+{% if event.manager_users %}
+    <div class="event-managers">
+        {% if hide_info %}
+            <div class="event-managers">
+        {% endif %}
+        <div class="event-managers-title">Организуют 👇</div>
+
+        {% for manager in event.manager_users %}
+            <a href="{{ manager.profile_url }}" target="_blank" class="event-manager">
+                <span class="avatar" style="background-image: url('{{ manager.avatar }}');"></span>
+                <span>{{ manager.full_name }}</span>
+            </a>
+        {% endfor %}
+
+        {% if hide_info %}
+            </div>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% if event.contact_url %}
+    <div class="event-contact">
+        💬 <a href="{{ event.contact_url }}">Связаться с оргами</a>
+    </div>
+{% endif %}
+
+{% if request.user.is_admin %}
+    <div class="event-edit-button">
+        <a href="{% url "edit_event" event.id %}" class="button">✏️ Редактировать</a>
+    </div>
+{% endif %}

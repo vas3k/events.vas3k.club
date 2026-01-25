@@ -8,7 +8,10 @@ from events.views import (
 )
 from landing.views import landing_page
 from notifications.views import subscribe, unsubscribe
-from tickets.views import show_ticket, update_ticket_checklist_answer, stripe_webhook, buy_tickets
+from tickets.views import (
+    show_ticket, update_ticket_checklist_answer, stripe_webhook, buy_tickets,
+    generate_transfer_code, show_transfer, accept_transfer
+)
 from tickets.csv import export_tickets_csv, export_checklists_csv
 from users.views import profile
 
@@ -27,11 +30,15 @@ urlpatterns = [
     path(r"ticket/<str:ticket_id>/", show_ticket, name="show_ticket"),
     path(r"ticket/<str:ticket_id>/checklist/answers/",
          update_ticket_checklist_answer, name="update_ticket_checklist_answer"),
+    path(r"ticket/<str:ticket_id>/transfer/generate/", generate_transfer_code, name="generate_transfer_code"),
+    path(r"ticket/<str:ticket_id>/transfer/<str:transfer_code>/", show_transfer, name="show_transfer"),
+    path(r"ticket/<str:ticket_id>/transfer/<str:transfer_code>/accept/", accept_transfer, name="accept_transfer"),
 
     path(r"notifications/subscribe/<str:event_id>/<str:topic>/", subscribe, name="subscribe"),
     path(r"notifications/unsubscribe/<str:event_id>/<str:topic>/", unsubscribe, name="unsubscribe"),
 
     path(r"create/", create_event, name="create_event"),
+
     path(r"<slug:event_id>/edit/", edit_event, name="edit_event"),
     path(r"<slug:event_id>/edit/ticket-types/", edit_event_ticket_types, name="edit_event_ticket_types"),
     path(r"<slug:event_id>/edit/ticket-types/new/", edit_ticket_type, name="edit_ticket_type_new"),

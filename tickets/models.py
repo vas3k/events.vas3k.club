@@ -19,6 +19,8 @@ class Ticket(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    transfer_code = models.CharField(max_length=64, null=True, blank=True)
+
     class Meta:
         db_table = "tickets"
         ordering = ["-created_at"]

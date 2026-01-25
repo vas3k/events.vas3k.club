@@ -7,6 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Q, F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
+from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers, Event
@@ -16,6 +17,7 @@ from tickets.models import Ticket, TicketChecklistAnswers
 from tickets.helpers import parse_stripe_webhook_event
 from notifications.helpers import send_notifications
 from users.models import User
+from utils.strings import random_string
 from vas3k_events.exceptions import BadRequest, RateLimitException, NotFound
 
 log = logging.getLogger()
@@ -251,3 +253,78 @@ def update_ticket_checklist_answer(request, ticket_id):
     )
 
     return redirect("show_ticket", ticket_id=ticket.id)
+
+
+@login_required
+def generate_transfer_code(request, ticket_id):
+    if not request.user.is_admin:
+        raise PermissionDenied("Вы не админ")
+
+    if request.method != "POST":
+        raise PermissionDenied("Только POST запросы")
+
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+    
+    # Generate transfer code
+    transfer_code = random_string(32)
+    ticket.transfer_code = transfer_code
+    ticket.save()
+
+    # Build transfer URL
+    transfer_path = reverse("show_transfer", args=[str(ticket.id), transfer_code])
+    transfer_url = request.build_absolute_uri(transfer_path)
+
+    return render(request, "message.html", {
+        "title": "Код для передачи билета создан",
+        "message": f'<p>Ссылка для передачи билета:</p><p><a href="{transfer_url}" target="_blank">{transfer_url}</a></p><p>Отправьте эту ссылку новому владельцу билета.</p>',
+    })
+
+
+@login_required
+def show_transfer(request, ticket_id, transfer_code):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    # Verify transfer code
+    if not ticket.transfer_code or ticket.transfer_code != transfer_code:
+        raise PermissionDenied("Неверный код передачи")
+
+    # Get old user info
+    old_user = ticket.user
+
+    return render(request, "tickets/transfer.html", {
+        "ticket": ticket,
+        "old_user": old_user,
+        "transfer_code": transfer_code,
+    })
+
+
+@login_required
+def accept_transfer(request, ticket_id, transfer_code):
+    if request.method != "POST":
+        raise PermissionDenied("Только POST запросы")
+
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    # Verify transfer code
+    if not ticket.transfer_code or ticket.transfer_code != transfer_code:
+        raise PermissionDenied("Неверный код передачи")
+
+    # Get old user before transfer
+    old_user = ticket.user
+    new_user = request.user
+
+    # Update ticket user
+    ticket.user = new_user
+    ticket.transfer_code = None  # Clear transfer code after use
+    ticket.save()
+
+    # Update all checklist answers for this ticket
+    TicketChecklistAnswers.objects.filter(ticket=ticket).update(user=new_user)
+
+    ticket_path = reverse("show_ticket", args=[str(ticket.id)])
+    ticket_url = request.build_absolute_uri(ticket_path)
+    
+    return render(request, "message.html", {
+        "title": "Билет успешно передан",
+        "message": f'<p>Билет №{ticket.code} на событие "{ticket.event.title}" успешно передан вам.</p><p><a href="{ticket_url}">Перейти к билету</a></p>',
+    })

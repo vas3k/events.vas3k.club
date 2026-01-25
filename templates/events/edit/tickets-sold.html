@@ -31,32 +31,35 @@
             </div>
             <div class="list">
                 {% for ticket in tickets %}
-                    <a href="{{ ticket.user.profile_url }}" target="_blank" style="text-decoration: none; color: inherit;">
-                        <div class="list-row list-row-hover">
-                            <div class="list-cell">
-                                {% if ticket.user %}
+                    <div class="list-row list-row-hover">
+                        <div class="list-cell">
+                            {% if ticket.user %}
+                                <a href="{{ ticket.user.profile_url }}" target="_blank" style="text-decoration: none; color: inherit;">
                                     <div class="list-user">
                                         <span class="avatar" style="background-image: url('{{ ticket.user.avatar }}');"></span>
                                         <span>{{ ticket.user.full_name }}</span>
                                     </div>
-                                {% endif %}
-                                {% if ticket.customer_email %}
-                                    <div style="opacity: 0.5;">{{ ticket.customer_email }}</div>
-                                {% elif not ticket.user %}
-                                    <div style="opacity: 0.5;">—</div>
-                                {% endif %}
-                            </div>
-                            <div class="list-cell">
-                                {{ ticket.ticket_type.name }}: №{{ ticket.code }}
-                            </div>
-                            <div class="list-cell list-cell-date">
-                                {{ ticket.created_at|date:"d.m.Y H:i" }}
-                            </div>
-                            <div class="list-cell-actions">
-                                <!-- Actions will be added later -->
-                            </div>
+                                </a>
+                            {% endif %}
+                            {% if ticket.customer_email %}
+                                <div style="opacity: 0.5;">{{ ticket.customer_email }}</div>
+                            {% elif not ticket.user %}
+                                <div style="opacity: 0.5;">—</div>
+                            {% endif %}
                         </div>
-                    </a>
+                        <div class="list-cell">
+                            {{ ticket.ticket_type.name }}: №{{ ticket.code }}
+                        </div>
+                        <div class="list-cell list-cell-date">
+                            {{ ticket.created_at|date:"d.m.Y H:i" }}
+                        </div>
+                        <div class="list-cell-actions">
+                            <form method="POST" action="{% url "generate_transfer_code" ticket.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="button button-small" onclick="return confirm('Вы уверены, что хотите создать код для передачи билета №{{ ticket.code }}?')">🔄 Transfer</button>
+                            </form>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         </div>

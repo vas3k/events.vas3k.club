@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% load text_filters %}
+{% load events %}
+
+{% block title %}
+    Передача билета: #{{ ticket.code }} — {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="content ticket">
+        <div class="event-sidebar ticket-sidebar">
+            {% include "events/event-sidebar.html" with event=ticket.event %}
+        </div>
+        <div class="ticket-main animate-on-load">
+            <div class="ticket-title">
+                Передача билета
+            </div>
+
+            <div class="block">
+                <div class="ticket-description">
+                    {% include "tickets/ticket-item.html" with hide_checklist=True %}
+                </div>
+            </div>
+
+            {% if old_user %}
+                <div class="block">
+                    <div class="block-header">👤 Текущий владелец</div>
+                    <div class="block-description block-description-center">
+                        <div>
+                            <span class="avatar" style="background-image: url('{{ old_user.avatar }}'); width: 40px; height: 40px;"></span>
+                            <span>{{ old_user.full_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="block">
+                <div class="block-description block-description-center">
+                    💥 Убедитесь, что перевели владельцу билета денежку! Если вы забрали билет, но не заплатили — мы всё узнаем!
+                </div>
+                <form method="POST" action="{% url "accept_transfer" ticket.id transfer_code %}">
+                    {% csrf_token %}
+                    <div class="block-description block-description-center">
+                        <button type="submit" class="button button-big">✅ Принять билет</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

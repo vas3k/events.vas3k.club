@@ -7,11 +7,13 @@
         <span class="ticket-item-title">{{ ticket.event.title }}: Билет №{{ ticket.code }}</span>
         <span class="ticket-item-subtitle">{{ ticket.ticket_type.name }}</span>
         <span class="ticket-item-subtitle">{{ ticket.ticket_type.description }}</span>
-        {% if ticket.has_checklist %}
-            {% if ticket|checklist_completed:request.user %}
-                <span class="ticket-item-checklist-completed">✅ Чеклист выполнен</span>
-            {% else %}
-                <span class="ticket-item-checklist-incomplete">☑️ Чеклист не выполнен</span>
+        {% if not hide_checklist %}
+            {% if ticket.has_checklist %}
+                {% if ticket|checklist_completed:request.user %}
+                    <span class="ticket-item-checklist-completed">✅ Чеклист выполнен</span>
+                {% else %}
+                    <span class="ticket-item-checklist-incomplete">☑️ Чеклист не выполнен</span>
+                {% endif %}
             {% endif %}
         {% endif %}
     </span>

@@ -10,38 +10,7 @@
 {% block content %}
     <div class="content event">
         <div class="event-sidebar">
-            <a href="{% url "show_event" event.id %}">
-                <span class="event-image" style="background-image: url('{{ event.icon|default:event.image }}');"></span>
-            </a>
-
-            {% if event.description %}
-                <div class="event-description">{{ event.description }}</div>
-            {% endif %}
-
-            {% if event.manager_users %}
-                <div class="event-managers">
-                    <div class="event-managers-title">Организуют 👇</div>
-
-                    {% for manager in event.manager_users %}
-                        <a href="{{ manager.profile_url }}" target="_blank" class="event-manager">
-                            <span class="avatar" style="background-image: url('{{ manager.avatar }}');"></span>
-                            <span>{{ manager.full_name }}</span>
-                        </a>
-                    {% endfor %}
-                </div>
-            {% endif %}
-
-            {% if event.contact_url %}
-                <div class="event-contact">
-                    💬 <a href="{{ event.contact_url }}">Связаться с оргами</a>
-                </div>
-            {% endif %}
-
-            {% if request.user.is_admin %}
-                <div class="event-edit-button">
-                    <a href="{% url "edit_event" event.id %}" class="button">✏️ Редактировать</a>
-                </div>
-            {% endif %}
+            {% include "events/event-sidebar.html" with event=event hide_info=True %}
         </div>
 
         <div class="event-main animate-on-load">
@@ -69,7 +38,7 @@
                 <div class="event-my-tickets">
                     <div class="block-header">💎 Мои билетики</div>
                     {% for ticket in my_tickets %}
-                        {% include "tickets/ticket-item.html" with ticket=ticket %}
+                        {% include "tickets/ticket-item.html" %}
                     {% endfor %}
                 </div>
             {% endif %}
@@ -98,7 +67,7 @@
                                 ✨ Тут для вас кое-что есть, но сначала нужно войти в аккаунт! ✨
                             </div>
                             <div class="block-description block-description-center">
-                                <a href="{% url "login_club" %}" class="button button-blue">✖︎ Войти через Вастрик Клуб</a>
+                                <a href="{% url "login_club" %}" class="button button-blue">Войти через Вастрик ✖︎ Клуб</a>
                             </div>
                         {% endif %}
                     </div>

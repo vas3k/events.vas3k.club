@@ -309,17 +309,13 @@ def accept_transfer(request, ticket_id, transfer_code):
     if not ticket.transfer_code or ticket.transfer_code != transfer_code:
         raise PermissionDenied("Неверный код передачи")
 
-    # Get old user before transfer
-    old_user = ticket.user
-    new_user = request.user
-
     # Update ticket user
-    ticket.user = new_user
+    ticket.user = request.user
     ticket.transfer_code = None  # Clear transfer code after use
     ticket.save()
 
     # Update all checklist answers for this ticket
-    TicketChecklistAnswers.objects.filter(ticket=ticket).update(user=new_user)
+    TicketChecklistAnswers.objects.filter(ticket=ticket).delete()
 
     ticket_path = reverse("show_ticket", args=[str(ticket.id)])
     ticket_url = request.build_absolute_uri(ticket_path)

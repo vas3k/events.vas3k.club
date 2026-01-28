@@ -200,15 +200,21 @@
 
             {% if participants %}
                 <div class="block event-participants">
-                    <div class="block-header">❤️ Участники</div>
-                    <div class="event-participants-list">
-                        {% for user in participants %}
-                            <a href="{{ user.profile_url }}" class="event-participant">
-                                <span class="avatar" style="background-image: url('{{ user.avatar }}');"></span>
-                                <span>{{ user.full_name }}</span>
-                            </a>
-                        {% endfor %}
-                    </div>
+                    <div class="block-header">❤️ Участники ({{ participants|length }})</div>
+                    {% if request.user.is_authenticated %}
+                        <div class="event-participants-list">
+                            {% for user in participants %}
+                                <a href="{{ user.profile_url }}" class="event-participant">
+                                    <span class="avatar" style="background-image: url('{{ user.avatar }}');"></span>
+                                    <span>{{ user.full_name }}</span>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="block-description block-description-center">
+                            <a href="{% url "login_club" %}" class="button">Войти через Вастрик ✖︎ Клуб</a>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>

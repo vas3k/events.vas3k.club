@@ -186,6 +186,7 @@ CLUB_OPENID_CONFIG = {
     "server_metadata_url": f"{CLUB_BASE_URL}/.well-known/openid-configuration",
     "client_kwargs": {"scope": "openid contact"},
 }
+CLUB_SERVICE_TOKEN = os.getenv("CLUB_SERVICE_TOKEN") or ""
 
 # Sentry
 

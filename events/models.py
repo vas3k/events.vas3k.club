@@ -40,7 +40,7 @@ class Event(models.Model):
 
     def manager_users(self):
         if self.managers:
-            return User.objects.filter(slug__in=self.managers.split(","))
+            return User.objects.filter(slug__in=map(str.strip, self.managers.split(",")))
         return []
 
     def is_sale_active(self):

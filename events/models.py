@@ -65,6 +65,9 @@ class Event(models.Model):
             return int((self.sale_starts_at - datetime.utcnow()).total_seconds())
         return 0
 
+    def is_event_passed(self):
+        return self.event_ends_at and self.event_ends_at < datetime.utcnow()
+
 
 class TicketType(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)

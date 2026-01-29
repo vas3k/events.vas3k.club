@@ -1,12 +1,20 @@
 {% load tickets %}
-<a href="{% url "show_ticket" ticket.id %}" class="block block-clickable ticket-item">
+{% load events %}
+<a href="{% url "show_ticket" ticket.id %}" class="block block-clickable ticket-item {% if ticket.event.is_event_passed %}ticket-item-inactive{% endif %}">
     <span class="ticket-item-icon">
         <img src="{{ ticket.event.icon }}" alt="{{ ticket.event.title }}">
     </span>
     <span class="ticket-item-info">
         <span class="ticket-item-title">{{ ticket.event.title }}: Билет №{{ ticket.code }}</span>
+
         <span class="ticket-item-subtitle">{{ ticket.ticket_type.name }}</span>
-        <span class="ticket-item-subtitle">{{ ticket.ticket_type.description }}</span>
+
+        {% if ticket.event.event_starts_at %}
+            <span class="ticket-item-subtitle">
+                {% pretty_date_range ticket.event.event_starts_at ticket.event.event_ends_at %}
+            </span>
+        {% endif %}
+
         {% if not hide_checklist %}
             {% if ticket.has_checklist %}
                 {% if ticket|checklist_completed:request.user %}

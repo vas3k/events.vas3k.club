@@ -69,9 +69,9 @@
     letter-spacing: -0.02em;
 }
 
-    .event-title-sidebar {
-        font-size: 150%;
-    }
+.event-title-sidebar {
+    font-size: 150%;
+}
 
 .event-info {
     display: flex;
@@ -98,7 +98,6 @@
     grid-template-columns: 30px auto auto;
     gap: 15px;
     text-decoration: none;
-    background: linear-gradient(135deg, #ddd6fe 0%, #ede9fe 50%, #ddd6fe 100%);
     margin: 0;
 }
 
@@ -111,7 +110,6 @@
 
 .ticket-type-soldout {
     opacity: 0.7;
-    background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 50%, #e0e0e0 100%);
 }
 
 .ticket-type-info {
@@ -216,7 +214,6 @@
 
 .event-banned {
     font-size: 120%;
-    background: linear-gradient(135deg, #fecdd3 0%, #ffe4e6 50%, #fecdd3 100%);
 }
 
 .event-intro {
@@ -293,7 +290,6 @@
 }
 
 .event-edit-menu-item.active {
-    background: linear-gradient(135deg, #ddd6fe 0%, #ede9fe 50%, #ddd6fe 100%);
     font-weight: 600;
 }
 

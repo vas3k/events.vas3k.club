@@ -15,19 +15,19 @@
             </a>
 
             <div class="event-edit-menu">
-                <a href="{% url "edit_event" event.id %}" class="event-edit-menu-item {% if section == "event" %}active{% endif %}">
+                <a href="{% url "edit_event" event.id %}" class="event-edit-menu-item {% if section == "event" %}active bg-purple{% endif %}">
                     📝 Событие
                 </a>
-                <a href="{% url "edit_event_ticket_types" event.id %}" class="event-edit-menu-item {% if section == "ticket-types" %}active{% endif %}">
+                <a href="{% url "edit_event_ticket_types" event.id %}" class="event-edit-menu-item {% if section == "ticket-types" %}active bg-purple{% endif %}">
                     🎟️ Типы билетов
                 </a>
-                <a href="{% url "edit_event_tickets_sold" event.id %}" class="event-edit-menu-item {% if section == "tickets-sold" %}active{% endif %}">
+                <a href="{% url "edit_event_tickets_sold" event.id %}" class="event-edit-menu-item {% if section == "tickets-sold" %}active bg-purple{% endif %}">
                     👤 Участники
                 </a>
-                <a href="{% url "edit_event_checklists" event.id %}" class="event-edit-menu-item {% if section == "checklists" %}active{% endif %}">
+                <a href="{% url "edit_event_checklists" event.id %}" class="event-edit-menu-item {% if section == "checklists" %}active bg-purple{% endif %}">
                     ☑️ Чеклисты
                 </a>
-                <a href="{% url "edit_event_notifications" event.id %}" class="event-edit-menu-item {% if section == "notifications" %}active{% endif %}">
+                <a href="{% url "edit_event_notifications" event.id %}" class="event-edit-menu-item {% if section == "notifications" %}active bg-purple{% endif %}">
                     🔔 Уведомления
                 </a>
             </div>

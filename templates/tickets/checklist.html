@@ -6,7 +6,7 @@
     <input type="hidden" name="checklist_id" value="{{ chk.option.id }}">
     {% csrf_token %}
 
-    <div class="block ticket-checklist-item {% if chk.option.is_required %}{% if chk.answer %}ticket-checklist-green{% else %}ticket-checklist-red{% endif %}{% endif %}">
+    <div class="block ticket-checklist-item {% if chk.option.is_required %}{% if chk.answer %}ticket-checklist-green bg-green{% else %}ticket-checklist-red bg-red{% endif %}{% endif %}">
         {% if chk.option.type == "select" %}
             <div class="ticket-checklist-name">{{ chk.option.name }}</div>
             <div class="ticket-checklist-value ticket-checklist-value-select">

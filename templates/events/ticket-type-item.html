@@ -1,5 +1,5 @@
 {% if not ticket_type.is_sold_out %}
-    <label class="block ticket-type ticket-type-selectable" data-ticket-url="{{ ticket_type.url }}">
+    <label class="block ticket-type ticket-type-selectable bg-purple" data-ticket-url="{{ ticket_type.url }}">
         <input type="radio" name="ticket_type_id" value="{{ ticket_type.id }}" class="ticket-type-checkbox">
 
         <div class="ticket-type-info">
@@ -31,7 +31,7 @@
         </div>
     </label>
 {% else %}
-    <div class="block ticket-type ticket-type-soldout">
+    <div class="block ticket-type ticket-type-soldout bg-grey">
         <div class="ticket-type-info">
             <div class="ticket-type-name">{{ ticket_type.name }}</div>
             {% if ticket_type.description %}

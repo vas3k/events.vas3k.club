@@ -18,13 +18,23 @@
             <div class="landing-event-description">{{ event.description }}</div>
         {% endif %}
 
-        {% if event.is_sold_out %}
-            <div class="landing-event-sold-out">SOLD OUT 😱</div>
-        {% else %}
-            {% if event.is_sale_starts_soon %}
-                <div class="landing-event-sale-dates">🎟️ Продажа билетов с {{ event.sale_starts_at | date:"j E Y" }}</div>
+        <div class="landing-event-sold-out">
+            {% if event.is_sold_out %}
+                {% if event.is_free_event%}
+                    <span>Пока мест больше нет 🥲</span>
+                {% else %}
+                    <span>SOLD OUT 😱</span>
+                {% endif %}
+
+                {% if event.waitlist_url and not event.is_event_passed %}
+                    <span class="label label-green">Есть вейтлист!</span>
+                {% endif %}
+            {% else %}
+                {% if event.is_sale_starts_soon %}
+                    <div class="landing-event-sale-dates">🎟️ Продажа билетов с {{ event.sale_starts_at | date:"j E Y" }}</div>
+                {% endif %}
             {% endif %}
-        {% endif %}
+        </div>
     </div>
 
     {% if event.is_sale_starts_soon %}

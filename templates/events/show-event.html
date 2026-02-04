@@ -57,11 +57,13 @@
 
                             {% csrf_token %}
 
-                            <div class="ticket-types-buy">
-                                <button type="submit" class="button button-big">
-                                    {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
-                                </button>
-                            </div>
+                            {% if not special_ticket_types.0.url %}
+                                <div class="ticket-types-buy">
+                                    <button type="submit" class="button button-big">
+                                        {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                    </button>
+                                </div>
+                            {% endif %}
                         {% else %}
                             <div class="block-description block-description-center">
                                 ✨ Тут для вас кое-что есть, но сначала нужно войти в аккаунт! ✨
@@ -106,11 +108,13 @@
 
                             {% csrf_token %}
 
-                            <div class="ticket-types-buy">
-                                <button type="submit" class="button button-big">
-                                    {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
-                                </button>
-                            </div>
+                            {% if not ticket_types.0.url %}
+                                <div class="ticket-types-buy">
+                                    <button type="submit" class="button button-big">
+                                        {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                    </button>
+                                </div>
+                            {% endif %}
                         </div>
                     </form>
                 {% endif %}

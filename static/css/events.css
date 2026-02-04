@@ -106,6 +106,7 @@
     height: 28px;
     cursor: pointer;
     outline: none;
+    font-size: 28px;
 }
 
 .ticket-type-soldout {

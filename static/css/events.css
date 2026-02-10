@@ -88,6 +88,7 @@
 
 .ticket-types {
     margin-top: 48px;
+    margin-bottom: 48px;
     display: flex;
     flex-direction: column;
     gap: 16px;

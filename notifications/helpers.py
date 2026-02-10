@@ -2,7 +2,7 @@ import logging
 
 from django.template import loader
 
-from common.markdown.markdown import markdown_text, markdown_tg
+from common.markdown.markdown import markdown_tg
 from notifications.email.sender import send_transactional_email
 from notifications.telegram.sender import send_telegram_message, Chat
 
@@ -18,7 +18,7 @@ def send_notifications(email_address, telegram_id, message_title="", message_tex
                 subject=message_title,
                 html=confirmation_template.render({
                     "title": message_title,
-                    "message": markdown_text(message_text),
+                    "message": message_text,
                 })
             )
         except Exception as e:

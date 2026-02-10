@@ -28,7 +28,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         production = options.get("production")
-        event_id = options.get("event-id")
+        event_id = options.get("event_id")
 
         event = Event.objects.get(id=event_id)
 

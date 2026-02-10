@@ -1,7 +1,7 @@
 {% extends "events/edit/layout.html" %}
 
 {% block edit_content %}
-    <div class="event-title">Участники</div>
+    <div class="event-title">Участники ({{ tickets | length }})</div>
 
     {% if ticket_stats %}
         <div class="block">

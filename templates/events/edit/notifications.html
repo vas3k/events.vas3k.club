@@ -1,7 +1,7 @@
 {% extends "events/edit/layout.html" %}
 
 {% block edit_content %}
-    <div class="event-title">Уведомления</div>
+    <div class="event-title">Уведомления ({{ subscriptions | length }})</div>
 
     {% if subscriptions %}
         <div class="block">

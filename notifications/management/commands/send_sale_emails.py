@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.core.management import BaseCommand
 
 from events.models import Event
@@ -8,6 +9,14 @@ from notifications.models import EventSubscription
 
 log = logging.getLogger(__name__)
 
+TEXT = """Приветы!
+
+Вы оставляли нам свой имейл, чтобы мы уведомили вас о начале продажи билетов на %(event_name)s.
+
+Так вот мы спешим вам рассказать, что продажа началась. Скорее кликайте кнопочку и записывайтесь!
+
+[.button 🔥 Опа опа опа](%(event_link)s) 
+"""
 
 class Command(BaseCommand):
     help = "Send sale announcement emails + telegrams"
@@ -49,8 +58,11 @@ class Command(BaseCommand):
                 send_notifications(
                     email_address=subscriber.email,
                     telegram_id=subscriber.user.telegram_id if subscriber.user else None,
-                    message_title="TITLE", # TODO:
-                    message_text="HTML",
+                    message_title=f"Продажа билетов на {event.title} началась!",
+                    message_text=TEXT.format(
+                        event_name=event.title,
+                        event_link=f"{settings.APP_HOST}/{event.id}/",
+                    ),
                 )
             except Exception as ex:
                 log.exception("Failed to send email to %s", subscriber.email)

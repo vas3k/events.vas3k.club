@@ -2,6 +2,7 @@ import logging
 from collections import namedtuple
 
 import telegram
+from asgiref.sync import async_to_sync
 from django.conf import settings
 from django.template import loader
 from telegram.constants import ParseMode
@@ -38,7 +39,7 @@ def send_telegram_message(
 
     try:
         if len(images_in_message) == 1 and len(text) < PHOTO_TEXT_LIMIT:
-            return bot.send_photo(
+            return async_to_sync(bot.send_photo)(
                 chat_id=chat.id,
                 photo=images_in_message[0],
                 caption=text[:PHOTO_TEXT_LIMIT],
@@ -46,7 +47,7 @@ def send_telegram_message(
                 **kwargs
             )
         else:
-            return bot.send_message(
+            return async_to_sync(bot.send_message)(
                 chat_id=chat.id,
                 text=text[:NORMAL_TEXT_LIMIT],
                 parse_mode=parse_mode,

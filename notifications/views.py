@@ -18,6 +18,9 @@ def subscribe(request, event_id, topic):
         if not email:
             raise BadRequest(title="Укажите почту", message="А то куда писать-то?")
 
+        if "@" not in email or "." not in email or len(email) > 100:
+            raise BadRequest(title="Странная у вас почта", message="Укажите нормальную!")
+
         EventSubscription.objects.get_or_create(
             event=event,
             email=email,

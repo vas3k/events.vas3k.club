@@ -60,7 +60,7 @@
                             {% if not special_ticket_types.0.url %}
                                 <div class="ticket-types-buy">
                                     <button type="submit" class="button button-big">
-                                        {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                        {% if special_ticket_types|is_every_ticket_type_free %}Записаться{% else %}Купить{% endif %}
                                     </button>
                                 </div>
                             {% endif %}
@@ -95,7 +95,7 @@
                     <form method="post" action="{% url "buy_tickets" %}">
                         <div class="block ticket-types">
                             <div class="block-header">
-                                🎟️ {% if event.is_free_event %}Записаться на ивент{% else %}Купить билет{% endif %}
+                                🎟️ Билеты
                             </div>
 
                             {% if not ticket_types %}
@@ -111,7 +111,7 @@
                             {% if not ticket_types.0.url %}
                                 <div class="ticket-types-buy">
                                     <button type="submit" class="button button-big">
-                                        {% if event.is_free_event %}Записаться{% else %}Купить{% endif %}
+                                        {% if ticket_types|is_every_ticket_type_free %}Записаться{% else %}Купить{% endif %}
                                     </button>
                                 </div>
                             {% endif %}

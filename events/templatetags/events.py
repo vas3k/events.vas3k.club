@@ -56,3 +56,8 @@ def int_sub(context, first, second):
 @register.filter
 def dict_get(value, key):
     return value.get(key)
+
+
+@register.filter
+def is_every_ticket_type_free(ticket_types):
+    return all([tt.price == 0 for tt in ticket_types])

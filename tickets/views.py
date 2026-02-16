@@ -10,11 +10,11 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers, Event
+from events.models import TicketType, TicketTypeChecklist, TicketChecklistWithAnswers
 from tickets.stripe import stripe
 from tickets.models import Ticket, TicketChecklistAnswers
 
-from tickets.helpers import parse_stripe_webhook_event
+from tickets.helpers import parse_stripe_webhook_event, activate_ticket, update_ticket_counters_and_sold_out
 from notifications.helpers import send_notifications
 from users.models import User
 from utils.strings import random_string
@@ -61,12 +61,8 @@ def stripe_webhook(request):
 
                     # Issue a ticket (one for each quantity)
                     for _ in range(item.quantity):
-                        Ticket.objects.create(
+                        activate_ticket(
                             user=user,
-                            code=Ticket.objects.filter(event=ticket_type.event).count() + 1,
-                            customer_email=user.email,
-                            stripe_payment_id=session.get("payment_intent"),
-                            event=ticket_type.event,
                             ticket_type=ticket_type,
                             metadata={
                                 "price_paid": item.price.unit_amount / 100,  # Convert from cents
@@ -78,26 +74,7 @@ def stripe_webhook(request):
 
                     ticket_types_processed.add(ticket_type)
 
-                    # Check if number of sales is exceeded
-                    ticket_sales_count = Ticket.objects.filter(ticket_type=ticket_type).count()
-                    if ticket_type.limit_quantity >= 0 and ticket_sales_count >= ticket_type.limit_quantity:
-                        # Check if ticket is sold out
-                        TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
-                            tickets_sold=ticket_sales_count,
-                            is_sold_out=True
-                        )
-
-                        # Check if the whole event is sold out
-                        any_active_tickets_left = TicketType.objects.filter(
-                            event=ticket_type.event,
-                        ).filter(Q(limit_quantity__lt=0) | Q(tickets_sold__lt=F("limit_quantity")))
-                        if not any_active_tickets_left:
-                            Event.objects.filter(id=ticket_type.event_id).update(is_sold_out=True)
-                    else:
-                        # just increase counter
-                        TicketType.objects.filter(stripe_price_id=stripe_price_id).update(
-                            tickets_sold=ticket_sales_count
-                        )
+                    update_ticket_counters_and_sold_out(ticket_type=ticket_type)
 
             # Send confirmation emails (unique by ticket code)
             for ticket_type in ticket_types_processed:
@@ -165,17 +142,40 @@ def buy_tickets(request):
             message="Выберите хоть один билет для покупки"
         )
 
-    if ticket_type.is_sold_out:
+    if ticket_type.is_every_ticket_sold:
         raise RateLimitException(
             title="Эти билеты закончились",
             message="К сожалению, билеты этого типа уже закончились. Попробуйте купить другие."
         )
 
-    if ticket_type.limit_per_user > 0 and ticket_type_amount > ticket_type.limit_per_user:
-        raise BadRequest(
-            title=f"Максимум {ticket_type.limit_per_user} билетов в одни руки!",
-            message="Выберите меньшее количество билетов"
-        )
+    if ticket_type.limit_per_user > 0:
+        if ticket_type_amount > ticket_type.limit_per_user:
+            raise BadRequest(
+                title=f"Максимум {ticket_type.limit_per_user} билетов в одни руки!",
+                message="Выберите меньшее количество билетов"
+            )
+
+        already_sold_to_the_user_count = Ticket.objects.filter(ticket_type=ticket_type, user=request.user).count()
+        if already_sold_to_the_user_count >= ticket_type.limit_per_user:
+            raise BadRequest(
+                title=f"У вас уже есть {already_sold_to_the_user_count} билетов!",
+                message=f"Билеты этого типа выдаются только по {ticket_type.limit_per_user} на руки. У вас уже есть."
+            )
+
+    if ticket_type.price == 0:
+        for _ in range(ticket_type_amount):
+            activate_ticket(
+                user=request.user,
+                ticket_type=ticket_type,
+                metadata={
+                    "price_paid": ticket_type.price,
+                    "currency": ticket_type.currency,
+                },
+            )
+
+        update_ticket_counters_and_sold_out(ticket_type=ticket_type)
+
+        return redirect("profile")
 
     try:
         session = stripe.checkout.Session.create(

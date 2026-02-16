@@ -29,7 +29,6 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    is_free_event = models.BooleanField(default=False)
     is_visible = models.BooleanField(default=True)
     is_sold_out = models.BooleanField(default=False)
     index = models.IntegerField(default=0)
@@ -80,7 +79,7 @@ class TicketType(models.Model):
     currency = models.CharField(max_length=8, default="", null=True, blank=True)
     url = models.URLField(null=True, blank=True)
 
-    stripe_price_id = models.CharField(max_length=255, null=True, blank=True)  # FIXME: make uniq?
+    stripe_price_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
 
     welcome_message_title = models.CharField(max_length=255, null=True, blank=True)
     welcome_message_text = models.TextField(null=True, blank=True)
@@ -105,10 +104,17 @@ class TicketType(models.Model):
     def __str__(self):
         return self.name
 
+    @property
     def left_tickets_count(self):
         if self.limit_quantity > 0:
             return self.limit_quantity - self.tickets_sold
         return -1
+
+    @property
+    def is_every_ticket_sold(self):
+        if self.limit_quantity < 0:
+            return False
+        return self.is_sold_out or self.left_tickets_count == 0
 
 
 class TicketTypeChecklist(models.Model):

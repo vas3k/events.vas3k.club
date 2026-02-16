@@ -20,11 +20,7 @@
 
         <div class="landing-event-sold-out">
             {% if event.is_sold_out %}
-                {% if event.is_free_event%}
-                    <span>Пока мест больше нет 🥲</span>
-                {% else %}
-                    <span>SOLD OUT 😱</span>
-                {% endif %}
+                <span>SOLD OUT 😱</span>
 
                 {% if event.waitlist_url and not event.is_event_passed %}
                     <span class="label label-green">Есть вейтлист!</span>

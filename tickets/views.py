@@ -18,7 +18,7 @@ from tickets.helpers import parse_stripe_webhook_event, activate_ticket, update_
 from notifications.helpers import send_notifications
 from users.models import User
 from utils.strings import random_string
-from vas3k_events.exceptions import BadRequest, RateLimitException, NotFound
+from vas3k_events.exceptions import BadRequest, RateLimitException, NotFound, AccessDenied
 
 log = logging.getLogger()
 
@@ -134,6 +134,12 @@ def buy_tickets(request):
         ticket_type_amount = int(request.POST.get(f"ticket_type_amount_{ticket_type_id}") or 1)
     except ValueError:
         raise BadRequest()
+
+    if request.user.is_banned_on_events:
+        raise AccessDenied(
+            title="Не в этот раз :(",
+            message="К сожалению, вы не можете участвовать в этом ивенте и покупка билетов вам недоступна"
+        )
 
     ticket_type = TicketType.objects.filter(id=ticket_type_id).first()
     if not ticket_type:

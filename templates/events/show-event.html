@@ -77,14 +77,7 @@
             {% endif %}
 
             {% if event.is_sale_active %}
-                {% if not request.user.is_authenticated %}
-                    <div class="block event-unauthenticated">
-                        <div class="block-subheader">🎟️ Билеты видны только авторизованным юзерам</div>
-                        <div class="block-description block-description-center">
-                            <a href="{% url "login_club" %}" class="button">Войти через Вастрик ✖︎ Клуб</a>
-                        </div>
-                    </div>
-                {% elif request.user.is_banned_on_events %}
+                {% if request.user.is_banned_on_events %}
                     <div class="block event-banned bg-red">
                         <div class="block-header">😢</div>
                         <div class="block-description block-description-center">

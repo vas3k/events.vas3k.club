@@ -181,6 +181,16 @@ def buy_tickets(request):
 
         update_ticket_counters_and_sold_out(ticket_type=ticket_type)
 
+        try:
+            send_notifications(
+                email_address=request.user.email,
+                telegram_id=request.user.telegram_id if request.user else None,
+                message_title=ticket_type.welcome_message_title,
+                message_text=ticket_type.welcome_message_text,
+            )
+        except:
+            log.exception(f"Ticket notification failed")
+
         return redirect("profile")
 
     try:

@@ -13,7 +13,7 @@
                 <select name="answer_value" onchange="this.form.submit()">
                     <option value="">Не выбрано</option>
                     {% for select_option in chk.option.value %}
-                        <option value="{{ select_option.item }}" {% if chk.answer == select_option.item %}selected{% endif %} {% if chk.stats|dict_get:select_option.item >= select_option.limit %}disabled{% endif %}>
+                        <option value="{{ select_option.item }}" {% if chk.answer == select_option.item %}selected{% endif %} {% if select_option.limit and chk.stats|dict_get:select_option.item >= select_option.limit %}disabled{% endif %}>
                             {{ select_option.item }}
                             {% if select_option.limit %}
                                 ({% int_sub select_option.limit chk.stats|dict_get:select_option.item|default:0 %} шт.)

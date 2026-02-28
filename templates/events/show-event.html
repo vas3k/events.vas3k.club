@@ -143,33 +143,6 @@
                 </div>
             {% endif %}
 
-            {% if not event.sale_starts_at or event.is_sale_starts_soon %}
-                {% if not my_notifications %}
-                    <div class="block event-subscription">
-                        <div class="block-subheader">🔔 Подпишитесь на уведомления по этому ивенту</div>
-
-                        <form method="POST" action="{% url "subscribe" event.id "all" %}">
-                            <div class="block-description event-subscription-form">
-                                {% csrf_token %}
-                                <input type="email" name="email" value="{{ request.user.email }}">
-                                <button class="button button-blue">Уведомите меня!</button>
-                            </div>
-                        </form>
-                    </div>
-                {% else %}
-                    <div class="block event-subscription">
-                        <div class="block-subheader">✅ Вы получите уведомление на «{{ my_notifications.0.email }}» когда начнутся продажи</div>
-
-                        <form method="POST" action="{% url "unsubscribe" event.id "all" %}">
-                            <div class="block-description event-subscription-form">
-                                {% csrf_token %}
-                                <button class="button button-red">Не надо!</button>
-                            </div>
-                        </form>
-                    </div>
-                {% endif %}
-            {% endif %}
-
             {% if event.is_sold_out %}
                 <div class="block event-waitlist">
                     <div class="block-header">Кажется у нас Sold Out 😱</div>
@@ -189,6 +162,33 @@
                         </div>
                     {% endif %}
                 </div>
+            {% else %}
+                {% if not event.sale_starts_at or event.is_sale_starts_soon %}
+                    {% if not my_notifications %}
+                        <div class="block event-subscription">
+                            <div class="block-subheader">🔔 Подпишитесь на уведомления по этому ивенту</div>
+
+                            <form method="POST" action="{% url "subscribe" event.id "all" %}">
+                                <div class="block-description event-subscription-form">
+                                    {% csrf_token %}
+                                    <input type="email" name="email" value="{{ request.user.email }}">
+                                    <button class="button button-blue">Уведомите меня!</button>
+                                </div>
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="block event-subscription">
+                            <div class="block-subheader">✅ Вы получите уведомление на «{{ my_notifications.0.email }}» когда начнутся продажи</div>
+
+                            <form method="POST" action="{% url "unsubscribe" event.id "all" %}">
+                                <div class="block-description event-subscription-form">
+                                    {% csrf_token %}
+                                    <button class="button button-red">Не надо!</button>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endif %}
             {% endif %}
 
             {% if event.intro %}

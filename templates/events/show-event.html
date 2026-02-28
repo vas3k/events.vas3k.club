@@ -143,29 +143,29 @@
                 </div>
             {% endif %}
 
-            {% if event.is_sale_starts_soon %}
+            {% if not event.event_starts_at or event.is_sale_starts_soon %}
                 {% if not my_notifications %}
                     <div class="block event-subscription">
                         <div class="block-subheader">🔔 Подпишитесь на уведомления по этому ивенту</div>
 
-                        <div class="block-description event-subscription-form">
-                            <form method="POST" action="{% url "subscribe" event.id "all" %}">
+                        <form method="POST" action="{% url "subscribe" event.id "all" %}">
+                            <div class="block-description event-subscription-form">
                                 {% csrf_token %}
                                 <input type="email" name="email" value="{{ request.user.email }}">
                                 <button class="button button-blue">Уведомите меня!</button>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 {% else %}
                     <div class="block event-subscription">
                         <div class="block-subheader">✅ Вы получите уведомление на «{{ my_notifications.0.email }}» когда начнутся продажи</div>
 
-                        <div class="block-description event-subscription-form">
-                            <form method="POST" action="{% url "unsubscribe" event.id "all" %}">
+                        <form method="POST" action="{% url "unsubscribe" event.id "all" %}">
+                            <div class="block-description event-subscription-form">
                                 {% csrf_token %}
                                 <button class="button button-red">Не надо!</button>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 {% endif %}
             {% endif %}

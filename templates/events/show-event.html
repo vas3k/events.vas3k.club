@@ -56,6 +56,7 @@
                             {% endfor %}
 
                             {% csrf_token %}
+                            {% if special_code %}<input type="hidden" name="special_code" value="{{ special_code }}">{% endif %}
 
                             {% if not special_ticket_types.0.url %}
                                 <div class="ticket-types-buy">

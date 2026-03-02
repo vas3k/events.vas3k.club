@@ -1,5 +1,6 @@
 import logging
 
+import nh3
 import requests
 from authlib.integrations.django_client import OAuth
 from django.conf import settings
@@ -25,12 +26,13 @@ def parse_membership(token):
 
 def parse_badge(token):
     try:
-        return requests.get(
+        html = requests.get(
             url=f"{oauth.club.api_base_url}/user/me.badge.html",
             headers={
                 "Authorization": f"{token['token_type']} {token['access_token']}"
             }
         ).text
+        return nh3.clean(html)
     except Exception as ex:
         log.exception(ex)
         return None

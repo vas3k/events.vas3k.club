@@ -6,17 +6,13 @@ from notifications.models import EventSubscription
 from vas3k_events.exceptions import BadRequest
 
 
+@login_required
 def subscribe(request, event_id, topic):
     event = get_object_or_404(Event, id=event_id)
+    email = request.user.email
 
     if request.method == "POST":
-        email = request.POST.get("email")
-
-        if not email and request.user.is_authenticated:
-            email = request.user.email
-
-        if not email:
-            raise BadRequest(title="Укажите почту", message="А то куда писать-то?")
+        email = request.POST.get("email") or request.user.email
 
         if "@" not in email or "." not in email or len(email) > 100:
             raise BadRequest(title="Странная у вас почта", message="Укажите нормальную!")
@@ -26,7 +22,7 @@ def subscribe(request, event_id, topic):
             email=email,
             topic=topic,
             defaults=dict(
-                user=request.user if request.user.is_authenticated else None,
+                user=request.user,
             )
         )
 

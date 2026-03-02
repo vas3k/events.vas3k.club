@@ -31,6 +31,7 @@ def show_event(request, event_id, special_code=None):
 
     return render(request, "events/show-event.html", {
         "event": event,
+        "special_code": special_code,
         "special_ticket_types": special_ticket_types,
         "ticket_types": ticket_types,
         "participants": participants,

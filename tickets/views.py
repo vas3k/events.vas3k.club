@@ -4,6 +4,7 @@ from authlib.oauth1.rfc5849.errors import MethodNotAllowedError
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.db.models import Q, F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect
@@ -141,55 +142,71 @@ def buy_tickets(request):
             message="К сожалению, вы не можете участвовать в этом ивенте и покупка билетов вам недоступна"
         )
 
-    ticket_type = TicketType.objects.filter(id=ticket_type_id).first()
+    ticket_type = TicketType.objects.filter(id=ticket_type_id, is_visible=True).first()
     if not ticket_type:
         raise NotFound(
             title="Билет не выбран",
             message="Выберите хоть один билет для покупки"
         )
 
-    if ticket_type.is_every_ticket_sold:
-        raise RateLimitException(
-            title="Эти билеты закончились",
-            message="К сожалению, билеты этого типа уже закончились. Попробуйте купить другие."
+    if ticket_type.special_code and ticket_type.special_code != request.POST.get("special_code"):
+        raise AccessDenied(
+            title="Недействительная ссылка",
+            message="Ссылка на специальные билеты недействительна"
         )
 
-    if ticket_type.limit_per_user > 0:
-        if ticket_type_amount > ticket_type.limit_per_user:
-            raise BadRequest(
-                title=f"Максимум {ticket_type.limit_per_user} билетов в одни руки!",
-                message="Выберите меньшее количество билетов"
-            )
+    if not ticket_type.event.is_sale_active():
+        raise BadRequest(
+            title="Продажа билетов не активна",
+            message="Продажа билетов ещё не началась или уже закончилась"
+        )
 
-        already_sold_to_the_user_count = Ticket.objects.filter(ticket_type=ticket_type, user=request.user).count()
-        if already_sold_to_the_user_count >= ticket_type.limit_per_user:
-            raise BadRequest(
-                title=f"У вас уже есть {already_sold_to_the_user_count} билетов!",
-                message=f"Билеты этого типа выдаются только по {ticket_type.limit_per_user} на руки. У вас уже есть."
-            )
+    with transaction.atomic():
+        ticket_type = TicketType.objects.select_for_update().get(id=ticket_type.id)
 
+        if ticket_type.limit_quantity >= 0:
+            total_sold = Ticket.objects.filter(ticket_type=ticket_type).count()
+            if total_sold + ticket_type_amount > ticket_type.limit_quantity:
+                raise RateLimitException(
+                    title="Эти билеты закончились",
+                    message="К сожалению, билеты этого типа уже закончились. Попробуйте купить другие."
+                )
+
+        if ticket_type.limit_per_user > 0:
+            already_sold_to_the_user_count = Ticket.objects.filter(
+                ticket_type=ticket_type, user=request.user
+            ).count()
+            if already_sold_to_the_user_count + ticket_type_amount > ticket_type.limit_per_user:
+                raise BadRequest(
+                    title=f"Максимум {ticket_type.limit_per_user} билетов на руки!",
+                    message=f"У вас уже {already_sold_to_the_user_count}. "
+                            f"Можно докупить ещё {ticket_type.limit_per_user - already_sold_to_the_user_count}."
+                )
+
+        if ticket_type.price == 0:
+            for _ in range(ticket_type_amount):
+                activate_ticket(
+                    user=request.user,
+                    ticket_type=ticket_type,
+                    metadata={
+                        "price_paid": ticket_type.price,
+                        "currency": ticket_type.currency,
+                    },
+                )
+
+            update_ticket_counters_and_sold_out(ticket_type=ticket_type)
+
+    # Send notifications outside the transaction to avoid holding the lock during I/O
     if ticket_type.price == 0:
-        for _ in range(ticket_type_amount):
-            activate_ticket(
-                user=request.user,
-                ticket_type=ticket_type,
-                metadata={
-                    "price_paid": ticket_type.price,
-                    "currency": ticket_type.currency,
-                },
-            )
-
-        update_ticket_counters_and_sold_out(ticket_type=ticket_type)
-
         try:
             send_notifications(
                 email_address=request.user.email,
-                telegram_id=request.user.telegram_id if request.user else None,
+                telegram_id=request.user.telegram_id,
                 message_title=ticket_type.welcome_message_title,
                 message_text=ticket_type.welcome_message_text,
             )
-        except:
-            log.exception(f"Ticket notification failed")
+        except Exception:
+            log.exception("Ticket notification failed")
 
         return redirect("profile")
 
@@ -231,6 +248,13 @@ def update_ticket_checklist_answer(request, ticket_id):
         raise MethodNotAllowedError()
 
     checklist = get_object_or_404(TicketTypeChecklist, id=request.POST["checklist_id"])
+
+    if not ticket.ticket_type.checklists or checklist.id not in ticket.ticket_type.checklists:
+        raise BadRequest(
+            title="Ошибка",
+            message="Этот чеклист не относится к вашему билету"
+        )
+
     answer_value = request.POST.get("answer_value") or ""
 
     if not answer_value:

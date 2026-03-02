@@ -18,7 +18,8 @@ dependencies = [
     "premailer (>=3.10.0,<4.0.0)",
     "python-telegram-bot (>=22.5,<23.0)",
     "sentry-sdk[django] (>=2.50.0,<3.0.0)",
-    "gunicorn (>=23.0.0,<24.0.0)"
+    "gunicorn (>=23.0.0,<24.0.0)",
+    "nh3 (>=0.2.21,<1.0.0)"
 ]
 
 [build-system]

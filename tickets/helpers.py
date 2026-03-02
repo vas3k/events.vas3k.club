@@ -1,6 +1,7 @@
 import logging
 
 import stripe
+from django.db import transaction
 from django.db.models import Q, F
 
 from events.models import TicketTypeChecklist, TicketType, Event
@@ -46,16 +47,19 @@ def is_checklist_completed(ticket, user):
 
 
 def activate_ticket(user, ticket_type, metadata=None, session=None):
-    return Ticket.objects.create(
-        user=user,
-        code=Ticket.objects.filter(event=ticket_type.event).count() + 1,
-        customer_email=user.email,
-        stripe_payment_id=(session or {}).get("payment_intent"),
-        event=ticket_type.event,
-        ticket_type=ticket_type,
-        metadata=metadata or {},
-        session=session or {},
-    )
+    with transaction.atomic():
+        Event.objects.select_for_update().filter(id=ticket_type.event_id).first()
+        next_code = Ticket.objects.filter(event=ticket_type.event).count() + 1
+        return Ticket.objects.create(
+            user=user,
+            code=next_code,
+            customer_email=user.email,
+            stripe_payment_id=(session or {}).get("payment_intent"),
+            event=ticket_type.event,
+            ticket_type=ticket_type,
+            metadata=metadata or {},
+            session=session or {},
+        )
 
 
 def update_ticket_counters_and_sold_out(ticket_type):

@@ -30,9 +30,6 @@
 
 {% if event.managers %}
     <div class="event-managers">
-        {% if hide_info %}
-            <div class="event-managers">
-        {% endif %}
         <div class="event-managers-title">Организуют 👇</div>
 
         {% for manager in event.manager_users %}
@@ -41,10 +38,6 @@
                 <span>{{ manager.full_name }}</span>
             </a>
         {% endfor %}
-
-        {% if hide_info %}
-            </div>
-        {% endif %}
     </div>
 {% endif %}
 

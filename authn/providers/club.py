@@ -34,7 +34,7 @@ def parse_badge(token):
             }
         ).text
         attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
-        attributes["*"].add("class")
+        attributes.setdefault("*", set()).add("class")
         return nh3.clean(html, attributes=attributes)
     except Exception as ex:
         log.exception(ex)

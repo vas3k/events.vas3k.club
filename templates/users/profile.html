@@ -15,7 +15,7 @@
                 <div class="block-description block-description-center">У вас пока нет билетиков. Но когда они появятся, вы всегда сможете их найти тут, если что!</div>
 
                 <div class="block-description block-description-center">
-                    <a href="{% url "index" %}>К ивентам</a>
+                    <a href="{% url "index" %}">К ивентам</a>
                 </div>
             {% endif %}
 
@@ -24,7 +24,7 @@
             {% endfor %}
         </div>
 
-        <div class="block-header profile-header">Я — {{ request.user.full_name }}</div>
+        <div class="block-header profile-header">Я — {{ user.full_name }}</div>
 
         <div class="block-description block-description-center">
             Проверьте, что информация в вашем профиле актуальна — она будет напечатана на вашем бейджике

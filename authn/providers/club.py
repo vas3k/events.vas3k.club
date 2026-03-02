@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 
 import nh3
 import requests
@@ -32,7 +33,9 @@ def parse_badge(token):
                 "Authorization": f"{token['token_type']} {token['access_token']}"
             }
         ).text
-        return nh3.clean(html, attributes={**nh3.ALLOWED_ATTRIBUTES, "*": {"class"}})
+        attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
+        attributes["*"].add("class")
+        return nh3.clean(html, attributes=attributes)
     except Exception as ex:
         log.exception(ex)
         return None

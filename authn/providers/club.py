@@ -32,7 +32,7 @@ def parse_badge(token):
                 "Authorization": f"{token['token_type']} {token['access_token']}"
             }
         ).text
-        return nh3.clean(html)
+        return nh3.clean(html, attributes={**nh3.ALLOWED_ATTRIBUTES, "*": {"class"}})
     except Exception as ex:
         log.exception(ex)
         return None

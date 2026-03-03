@@ -155,12 +155,6 @@ def buy_tickets(request):
             message="Ссылка на специальные билеты недействительна"
         )
 
-    if not ticket_type.event.is_sale_active():
-        raise BadRequest(
-            title="Продажа билетов не активна",
-            message="Продажа билетов ещё не началась или уже закончилась"
-        )
-
     with transaction.atomic():
         ticket_type = TicketType.objects.select_for_update().get(id=ticket_type.id)
 

@@ -11,7 +11,6 @@ from common.regexp import IMAGE_RE
 
 log = logging.getLogger()
 
-bot = telegram.Bot(token=settings.TELEGRAM_TOKEN) if settings.TELEGRAM_TOKEN else None
 Chat = namedtuple("Chat", ["id"])
 
 NORMAL_TEXT_LIMIT = 4096
@@ -25,13 +24,15 @@ def send_telegram_message(
     disable_preview: bool = True,
     **kwargs
 ):
-    if not bot:
+    if not settings.TELEGRAM_TOKEN:
         log.warning("No telegram token. Skipping")
         return
 
     if not chat:
         log.warning("No chat id. Skipping")
         return
+
+    bot = telegram.Bot(token=settings.TELEGRAM_TOKEN)
 
     log.info(f"Telegram: sending message to chat_id {chat.id}, starting with {text[:10]}...")
 

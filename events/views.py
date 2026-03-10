@@ -22,6 +22,7 @@ def event_ical(request, event_id):
 
     response = HttpResponse(ical_content, content_type="text/calendar; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{event.id}.ics"'
+    response["Content-Length"] = len(ical_content)
     return response
 
 

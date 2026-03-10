@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import urlencode
 
 import nh3
@@ -42,8 +42,8 @@ class CalendarEventData:
         return cls(
             uid=f"event-{event.id}@events.vas3k.club",
             summary=event.title,
-            starts_at=event.event_starts_at,
-            ends_at=event.event_ends_at,
+            starts_at=event.event_starts_at.replace(tzinfo=timezone.utc),
+            ends_at=event.event_ends_at.replace(tzinfo=timezone.utc) if event.event_ends_at else None,
             description=nh3.clean(event.description, tags=set()) if event.description else None,
             location=event.location or None,
             url=event.location_url or None,
@@ -107,7 +107,7 @@ class OutlookCalendarExporter(CalendarExporter):
     BASE_URL = "https://outlook.live.com/calendar/0/action/compose"
 
     def export(self) -> str:
-        fmt = "%Y-%m-%dT%H:%M:%S"
+        fmt = "%Y-%m-%dT%H:%M:%SZ"
         params = {
             "rru": "addevent",
             "path": "/calendar/action/compose",

@@ -1,6 +1,8 @@
 from django import template
 from django.utils import formats
 
+from events.calendar import CalendarEventData, GoogleCalendarExporter, OutlookCalendarExporter
+
 register = template.Library()
 
 
@@ -61,3 +63,17 @@ def dict_get(value, key):
 @register.filter
 def is_every_ticket_type_free(ticket_types):
     return all([tt.price == 0 for tt in ticket_types])
+
+
+@register.simple_tag
+def google_calendar_url(event):
+    if not event.event_starts_at:
+        return ""
+    return GoogleCalendarExporter(CalendarEventData.from_event(event)).export()
+
+
+@register.simple_tag
+def outlook_calendar_url(event):
+    if not event.event_starts_at:
+        return ""
+    return OutlookCalendarExporter(CalendarEventData.from_event(event)).export()

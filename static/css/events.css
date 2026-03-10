@@ -322,3 +322,28 @@
 .ticket-type-limit-empty {
     opacity: 0.5;
 }
+
+.event-calendar-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.event-calendar-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--button-border-radius);
+    border: var(--button-border);
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 90%;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.event-calendar-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(9, 30, 66, .12);
+}

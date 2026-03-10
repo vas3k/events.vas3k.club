@@ -26,6 +26,24 @@
     {% if event.event_starts_at %}
         <div class="event-date">📅 {% pretty_date_range event.event_starts_at event.event_ends_at %}</div>
     {% endif %}
+
+{% endif %}
+
+{% if event.event_starts_at %}
+    <div class="event-managers-title">Добавить в календарь</div>
+    <div class="event-calendar-buttons" role="group" aria-label="Добавить в календарь">
+        <a href="{% url "event_ical" event.id %}" class="event-calendar-link" aria-label="Скачать файл для Apple Calendar">
+            🗓 Apple Calendar
+        </a>
+        {% google_calendar_url event as gcal_url %}
+        <a href="{{ gcal_url }}" class="event-calendar-link" target="_blank" rel="noopener noreferrer" aria-label="Добавить в Google Calendar">
+            📅 Google Calendar
+        </a>
+        {% outlook_calendar_url event as outlook_url %}
+        <a href="{{ outlook_url }}" class="event-calendar-link" target="_blank" rel="noopener noreferrer" aria-label="Добавить в Outlook Calendar">
+            📧 Outlook Calendar
+        </a>
+    </div>
 {% endif %}
 
 {% if event.managers %}

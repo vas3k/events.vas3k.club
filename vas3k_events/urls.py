@@ -2,7 +2,7 @@ from django.urls import path
 
 from authn.views import log_out, login_club, club_callback, log_in
 from events.views import (
-    show_event, edit_event, create_event, edit_ticket_type,
+    show_event, event_ical, edit_event, create_event, edit_ticket_type,
     edit_event_ticket_types, edit_event_tickets_sold, edit_event_checklists,
     edit_event_notifications, delete_ticket_type, delete_notification
 )
@@ -14,6 +14,7 @@ from tickets.views import (
 )
 from tickets.csv import export_tickets_csv, export_checklists_csv
 from users.views import profile
+
 
 urlpatterns = [
     path("", landing_page, name="index"),
@@ -50,6 +51,7 @@ urlpatterns = [
     path(r"<slug:event_id>/edit/checklists/export/", export_checklists_csv, name="export_checklists_csv"),
     path(r"<slug:event_id>/edit/notifications/", edit_event_notifications, name="edit_event_notifications"),
     path(r"<slug:event_id>/edit/notifications/<uuid:subscription_id>/delete/", delete_notification, name="delete_notification"),
+    path(r"<slug:event_id>/calendar.ics", event_ical, name="event_ical"),
     path(r"<slug:event_id>/special/<slug:special_code>/", show_event, name="show_event_with_special"),
     path(r"<slug:event_id>/", show_event, name="show_event"),
 ]

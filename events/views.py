@@ -1,12 +1,28 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 
+from events.calendar import CalendarEventData, ICalExporter
 from events.forms import EventForm, TicketTypeForm
 from events.models import Event, TicketType, TicketTypeChecklist
 from notifications.models import EventSubscription
 from tickets.models import Ticket, TicketChecklistAnswers
+
+
+def event_ical(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    if not event.event_starts_at:
+        return HttpResponse("Event has no start date", status=400)
+
+    data = CalendarEventData.from_event(event)
+    ical_content = ICalExporter(data).export()
+
+    response = HttpResponse(ical_content, content_type="text/calendar; charset=utf-8")
+    response["Content-Disposition"] = f'attachment; filename="{event.id}.ics"'
+    return response
 
 
 def show_event(request, event_id, special_code=None):

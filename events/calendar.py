@@ -62,9 +62,11 @@ class ICalExporter(CalendarExporter):
     PRODID = "-//vas3k.club//events//RU"
 
     def export(self) -> bytes:
+        start = self._data.starts_at if self._data.ends_at else self._data.starts_at.date()
+
         vevent = VEvent.new(
             uid=self._data.uid,
-            start=self._data.starts_at,
+            start=start,
             end=self._data.ends_at,
             summary=self._data.summary,
             description=self._data.description,
@@ -82,7 +84,7 @@ class GoogleCalendarExporter(CalendarExporter):
     BASE_URL = "https://calendar.google.com/calendar/render"
 
     def export(self) -> str:
-        fmt = "%Y%m%dT%H%M%SZ"
+        fmt = "%Y%m%dT%H%M%SZ" if self._data.ends_at else "%Y%m%d"
         start = self._data.starts_at.strftime(fmt)
         end = self._data.ends_at.strftime(fmt) if self._data.ends_at else start
 
@@ -115,6 +117,8 @@ class OutlookCalendarExporter(CalendarExporter):
 
         if self._data.ends_at:
             params["enddt"] = self._data.ends_at.strftime(fmt)
+        else:
+            params["allday"] = "true"
 
         if self._data.location:
             params["location"] = self._data.location

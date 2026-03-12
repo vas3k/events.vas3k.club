@@ -29,11 +29,16 @@ def export_tickets_csv(request, event_id):
     writer.writerow([
         "Email",
         "Имя",
+        "Профиль в Клубе",
+        "Страна",
+        "Город",
+        "Компания",
+        "Должность",
         "Код билета",
         "Тип билета",
         "Событие",
         "Дата покупки",
-        "Email покупателя",
+        "Email",
         "Цена",
         "Валюта",
     ])
@@ -50,6 +55,26 @@ def export_tickets_csv(request, event_id):
         # Get full name
         full_name = ticket.user.full_name if ticket.user and ticket.user.full_name else ""
 
+        country = ""
+        city = ""
+        company = ""
+        position = ""
+
+        if ticket.user:
+            profile_cache = getattr(ticket.user, "profile_cache", None)
+            if isinstance(profile_cache, dict):
+                profile_user = profile_cache.get("user") or profile_cache
+                if isinstance(profile_user, dict):
+                    country = profile_user.get("country") or ""
+                    city = profile_user.get("city") or ""
+                    company = profile_user.get("company") or ""
+                    position = profile_user.get("position") or ""
+
+        # Build profile URL
+        profile_url = ""
+        if ticket.user and getattr(ticket.user, "slug", None):
+            profile_url = f"https://vas3k.club/user/{ticket.user.slug}/"
+
         # Get price and currency from metadata
         price_paid = ""
         currency = ""
@@ -63,6 +88,11 @@ def export_tickets_csv(request, event_id):
         writer.writerow([
             email,
             full_name,
+            profile_url,
+            country,
+            city,
+            company,
+            position,
             ticket.code,
             ticket.ticket_type.name if ticket.ticket_type else "",
             event.title,

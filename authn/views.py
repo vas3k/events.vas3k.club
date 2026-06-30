@@ -72,8 +72,6 @@ def club_callback(request):
                        "<a href=\"https://vas3k.club\">Продлите</a> её здесь."
         })
 
-    user_badge = club.parse_badge(token)
-
     user = User.objects.filter(Q(email=userinfo["email"]) | Q(slug=userinfo["sub"])).first()
     telegram_id = club_profile["user"]["telegram"].get("id") if club_profile["user"].get("telegram") else None
     if user:
@@ -82,7 +80,6 @@ def club_callback(request):
         if not user.email or user.email != userinfo["email"]:
             user.email = userinfo["email"]
         user.telegram_id = telegram_id
-        user.badge_cache = user_badge
         user.profile_cache = club_profile
         user.save()
     else:
@@ -92,7 +89,6 @@ def club_callback(request):
             full_name=club_profile["user"]["full_name"],
             telegram_id=telegram_id,
             avatar=club_profile["user"]["avatar"],
-            badge_cache=user_badge,
             profile_cache=club_profile,
         )
 

@@ -26,28 +26,13 @@
 
         <div class="block-header profile-header">Я — {{ user.full_name }}</div>
 
-        <div class="block-description block-description-center">
-            Проверьте, что информация в вашем профиле актуальна — она будет напечатана на вашем бейджике
-        </div>
-
-        <div class="profile-badge">
-            {% if not user.badge_cache %}
-                <div class="block-description block-description-center">
-                    🔰 Бейджик не просинкался, нажмите кнопку синхронизировать ниже
-                </div>
-            {% else %}
-                {{ user.badge_cache | safe }}
-            {% endif %}
-        </div>
-
         <div class="block-description profile-buttons">
             <a href="https://vas3k.club/user/me/edit/profile/" class="button">✏️ Редактировать профиль</a>
-            <a href="{% url "login_club" %}" class="button">🔄 Синхронизировать данные</a>
+            <a href="{% url "logout" %}" class="button button-red">Выйти</a>
         </div>
     </div>
 
     <div class="profile-footer">
-        <a href="{% url "logout" %}" class="button button-red">Выйти</a>
     </div>
 </div>
 {% endblock %}

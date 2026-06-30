@@ -1,7 +1,5 @@
 import logging
-from copy import deepcopy
 
-import nh3
 import requests
 from authlib.integrations.django_client import OAuth
 from django.conf import settings
@@ -20,22 +18,6 @@ def parse_membership(token):
                 "Authorization": f"{token['token_type']} {token['access_token']}"
             }
         ).json()
-    except Exception as ex:
-        log.exception(ex)
-        return None
-
-
-def parse_badge(token):
-    try:
-        html = requests.get(
-            url=f"{oauth.club.api_base_url}/user/me.badge.html",
-            headers={
-                "Authorization": f"{token['token_type']} {token['access_token']}"
-            }
-        ).text
-        attributes = deepcopy(nh3.ALLOWED_ATTRIBUTES)
-        attributes.setdefault("*", set()).add("class")
-        return nh3.clean(html, attributes=attributes)
     except Exception as ex:
         log.exception(ex)
         return None

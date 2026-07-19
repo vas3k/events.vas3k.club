@@ -89,8 +89,8 @@ ipython_config.py
 # pipenv
 Pipfile.lock
 
-# poetry
-# poetry.lock  # Uncomment if you don't want to commit lock file
+# uv
+# uv.lock  # Uncomment if you don't want to commit lock file
 
 # pdm
 .pdm.toml

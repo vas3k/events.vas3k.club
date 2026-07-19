@@ -2,11 +2,14 @@
 name = "vas3k-events"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Vasily Zubarev",email = "me@vas3k.ru"}
-]
-readme = "README.md"
+authors = [{ name = "Vasily Zubarev", email = "me@vas3k.ru" }]
 requires-python = ">=3.13"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "django (>=6.0)",
     "psycopg[pool] (>=3.3.2,<4.0.0)",
@@ -20,12 +23,12 @@ dependencies = [
     "sentry-sdk[django] (>=2.50.0,<3.0.0)",
     "gunicorn (>=23.0.0,<24.0.0)",
     "nh3 (>=0.2.21,<1.0.0)",
-    "icalendar (>=7.0.3,<8.0.0)"
+    "icalendar (>=7.0.3,<8.0.0)",
 ]
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.22,<0.10.0"]
+build-backend = "uv_build"
 
-[tool.poetry]
-package-mode = false
+[tool.uv]
+package = false

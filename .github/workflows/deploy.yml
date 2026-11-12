@@ -1,0 +1,148 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build image
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: docker/setup-buildx-action@594f3bf4285d9ea8dc53c9a0c9c4092420091003
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302
+        with:
+          images: ghcr.io/vas3k/events.vas3k.club
+          tags: |
+            type=sha
+            type=raw,value=latest
+      - uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=registry,ref=ghcr.io/vas3k/events.vas3k.club:buildcache
+          cache-to: type=registry,ref=ghcr.io/vas3k/events.vas3k.club:buildcache,mode=max
+
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Make envfile
+        run: |
+          umask 077
+          python3 - <<'PYTHON'
+          import json
+          import os
+          from pathlib import Path
+
+          values = {key.removeprefix("secret_"): value for key, value in os.environ.items() if key.startswith("secret_") and value}
+          required = ['SECRET_KEY', 'POSTGRES_PASSWORD']
+          missing = [key for key in required if not values.get(key)]
+
+          if missing:
+              raise SystemExit("Missing production secrets: " + ", ".join(missing))
+
+          values["GITHUB_SHA"] = "sha-" + os.environ["GITHUB_SHA"][:7]
+          lines = []
+
+          for key, value in sorted(values.items()):
+              lines.append(key + "=" + json.dumps(value.replace("$", "$$"), ensure_ascii=False) + "\n")
+
+          Path(os.environ["RUNNER_TEMP"], "deploy.env").write_text("".join(lines))
+          PYTHON
+        env:
+          secret_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          secret_POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          secret_EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          secret_EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
+          secret_EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          secret_TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          secret_TELEGRAM_BOT_URL: ${{ secrets.TELEGRAM_BOT_URL }}
+          secret_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          secret_STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+          secret_STRIPE_PUBLIC_KEY: ${{ secrets.STRIPE_PUBLIC_KEY }}
+          secret_STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+          secret_CLUB_OPENID_CONFIG_SECRET: ${{ secrets.CLUB_OPENID_CONFIG_SECRET }}
+          secret_CLUB_SERVICE_TOKEN: ${{ secrets.CLUB_SERVICE_TOKEN }}
+      - name: Deploy over SSH
+        env:
+          SSH_HOST: ${{ secrets.PRODUCTION_SSH_HOST }}
+          SSH_USER: ${{ secrets.PRODUCTION_SSH_USERNAME }}
+          SSH_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.PRODUCTION_SSH_KNOWN_HOSTS }}
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          umask 077
+          : "${SSH_HOST:?Set PRODUCTION_SSH_HOST}"
+          : "${SSH_USER:?Set PRODUCTION_SSH_USERNAME}"
+          : "${SSH_KEY:?Set PRODUCTION_SSH_KEY}"
+          : "${SSH_KNOWN_HOSTS:?Set PRODUCTION_SSH_KNOWN_HOSTS}"
+          printf '%s\n' "$SSH_KEY" > "$RUNNER_TEMP/deploy.key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > "$RUNNER_TEMP/deploy.known_hosts"
+          ssh_options=(-i "$RUNNER_TEMP/deploy.key" -o IdentitiesOnly=yes -o BatchMode=yes -o StrictHostKeyChecking=yes -o "UserKnownHostsFile=$RUNNER_TEMP/deploy.known_hosts" -o ConnectTimeout=15 -o ServerAliveInterval=30 -o ServerAliveCountMax=3)
+          target="$SSH_USER@$SSH_HOST"
+          release="sha-${GITHUB_SHA:0:7}"
+          stage="/home/vas3k/events.vas3k.club/.deploy-$release"
+          ssh "${ssh_options[@]}" "$target" "umask 077 && mkdir -p '$stage'"
+          printf '%s' "$REGISTRY_TOKEN" | ssh "${ssh_options[@]}" "$target" "docker login ghcr.io --username '$REGISTRY_USER' --password-stdin"
+          scp "${ssh_options[@]}" "$RUNNER_TEMP/deploy.env" "$target:$stage/.env"
+          scp "${ssh_options[@]}" docker-compose.production.yml "$target:$stage/docker-compose.production.yml"
+          scp "${ssh_options[@]}" -r static "$target:$stage/"
+          ssh "${ssh_options[@]}" "$target" "bash -se -- '$release'" <<'REMOTE'
+          set -euo pipefail
+          umask 077
+          cd /home/vas3k/events.vas3k.club
+          stage="$PWD/.deploy-$1"
+          trap 'rm -rf -- "$stage"' EXIT
+          docker compose --project-name eventsvas3kclub --project-directory "$stage" -f "$stage/docker-compose.production.yml" --env-file "$stage/.env" config --quiet
+          docker compose --project-name eventsvas3kclub --project-directory "$stage" -f "$stage/docker-compose.production.yml" --env-file "$stage/.env" pull
+          install -m 600 "$stage/.env" .env
+          install -m 644 "$stage/docker-compose.production.yml" docker-compose.production.yml
+          mkdir -p static
+          cp -R "$stage/static/." static/
+          docker compose --project-name eventsvas3kclub -f docker-compose.production.yml --env-file .env up -d --no-build --pull never --wait --wait-timeout 180
+          REMOTE
+
+      - name: Remove temporary credentials
+        if: always()
+        run: rm -f "$RUNNER_TEMP/deploy.env" "$RUNNER_TEMP/deploy.key" "$RUNNER_TEMP/deploy.known_hosts"
